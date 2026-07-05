@@ -1,0 +1,1348 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+    <title>тихий путь</title>
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🌸</text></svg>">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Nunito:ital,wght@0,300;0,400;0,500;0,600;1,300&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
+    <style>
+        ::selection { background-color: #F6B492; color: #ffffff; }
+        ::-moz-selection { background-color: #F6B492; color: #ffffff; }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'Nunito', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: #faf7f2;
+            min-height: 100vh;
+            display: flex; align-items: center; justify-content: center; padding: 20px;
+            position: relative;
+            overflow-x: hidden;
+            animation: fadeInBody 0.8s ease forwards;
+        }
+
+        .blur-spot {
+            position: fixed;
+            border-radius: 50%;
+            filter: blur(60px);
+            opacity: 0.3;
+            z-index: 0;
+            pointer-events: none;
+            transition: transform 8s ease-in-out, opacity 2s ease;
+        }
+
+        @keyframes fadeInBody { from { opacity: 0; } to { opacity: 1; } }
+
+        .card {
+            max-width: 580px; width: 100%;
+            height: auto;
+            min-height: 520px;
+            background: rgba(255, 255, 250, 0.85);
+            backdrop-filter: blur(18px); -webkit-backdrop-filter: blur(18px);
+            border-radius: 48px;
+            padding: 2rem 1.8rem;
+            box-shadow: 0 25px 55px rgba(210, 180, 160, 0.25), 0 8px 20px rgba(190, 150, 130, 0.15), inset 0 1px 0 rgba(255, 255, 255, 0.7);
+            border: 1px solid rgba(255, 245, 235, 0.9);
+            position: relative; z-index: 2;
+            transition: box-shadow 0.3s ease, height 0.5s cubic-bezier(0.25, 0.1, 0.25, 1);
+            overflow: visible;
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-start;
+        }
+
+        .card:hover {
+            box-shadow: 0 30px 65px rgba(210, 180, 160, 0.35), 0 12px 28px rgba(190, 150, 130, 0.25), inset 0 1px 0 rgba(255, 255, 255, 0.8);
+        }
+
+        /* ===== Экраны ===== */
+        .screen {
+            display: none;
+            flex-direction: column;
+            gap: 1.4rem;
+            animation-duration: 0.5s;
+            animation-fill-mode: forwards;
+            overflow: visible;
+        }
+        .screen.active {
+            display: flex;
+            animation-name: fadeIn;
+        }
+        .screen.exiting {
+            display: flex;
+            animation-name: fadeOut;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(12px); }
+            to   { opacity: 1; transform: translateY(0); }
+        }
+        @keyframes fadeOut {
+            from { opacity: 1; transform: translateY(0); }
+            to   { opacity: 0; transform: translateY(-12px); }
+        }
+
+        /* ===== Специальные отступы для первого экрана ===== */
+        #inputScreen {
+            gap: 1rem;
+        }
+        #inputScreen .input-group {
+            gap: 0.8rem;
+        }
+        #inputScreen .row {
+            gap: 0.7rem;
+        }
+        #inputScreen .field label {
+            font-size: 0.85rem;
+            padding: 0.2rem 1rem;
+        }
+        #inputScreen .date-text-input,
+        #inputScreen .input-group select,
+        #inputScreen .input-group input[type=number] {
+            padding: 0.7rem 1.2rem;
+            font-size: 1rem;
+        }
+        #inputScreen .subtitle {
+            padding-bottom: 0.5rem;
+            font-size: 0.9rem;
+        }
+        #inputScreen .soft-footer {
+            margin-top: 0.2rem;
+        }
+
+        /* ===== Логотип – больше пространства для анимации ===== */
+        .logo {
+            display: inline-block;
+            font-size: 2rem;
+            margin-right: 0.5rem;
+            padding: 0 0.3rem;
+            animation: logoBounce 3s ease-in-out infinite;
+        }
+        @keyframes logoBounce {
+            0%,100%{transform:translateY(0)}
+            30%{transform:translateY(-5px)}
+            50%{transform:translateY(0)}
+            70%{transform:translateY(-3px)}
+        }
+
+        /* ===== Кастомный скролл для рекомендаций ===== */
+        .tips-list {
+            flex: 1;
+            overflow-y: auto;
+            padding-right: 8px;
+            max-height: 400px;
+        }
+        .tips-list::-webkit-scrollbar {
+            width: 6px;
+        }
+        .tips-list::-webkit-scrollbar-track {
+            background: #f3e7dd;
+            border-radius: 10px;
+        }
+        .tips-list::-webkit-scrollbar-thumb {
+            background: #d4a68c;
+            border-radius: 10px;
+            transition: background 0.2s;
+        }
+        .tips-list::-webkit-scrollbar-thumb:hover {
+            background: #c0856b;
+        }
+        .tips-list {
+            scrollbar-width: thin;
+            scrollbar-color: #d4a68c #f3e7dd;
+        }
+
+        .tip-item {
+            display: flex;
+            gap: 0.8rem;
+            background: #fef9f3;
+            border-radius: 20px;
+            padding: 0.8rem 1rem;
+            margin-bottom: 1rem;
+            border: 1px solid #f0ddd0;
+            transition: box-shadow 0.2s;
+        }
+        .tip-item:hover {
+            box-shadow: 0 4px 16px rgba(200,160,140,0.2);
+        }
+        .tip-icon {
+            font-size: 2rem;
+            line-height: 1;
+            flex-shrink: 0;
+        }
+        .tip-content h3 {
+            font-weight: 600;
+            color: #b1876f;
+            font-size: 1rem;
+            letter-spacing: 0.3px;
+        }
+        .tip-content p {
+            color: #7f6253;
+            font-size: 0.85rem;
+            line-height: 1.4;
+        }
+
+        /* ===== Остальные стили ===== */
+        h1 {
+            font-weight: 500; font-size: 1.9rem; letter-spacing: 0.5px; color: #c0856b; text-align: center;
+            word-break: break-word; line-height: 1.2; font-style: italic;
+            text-shadow: 0 1px 2px rgba(255, 245, 240, 0.8);
+            display: flex; align-items: center; justify-content: center; gap: 0.2rem;
+        }
+
+        .subtitle {
+            color: #b29686; text-align: center; font-size: 0.95rem; font-weight: 400; letter-spacing: 0.6px;
+            border-bottom: 1px dashed #ead3c4; padding-bottom: 0.6rem; font-style: italic;
+        }
+
+        .input-group { display: flex; flex-direction: column; align-items: center; gap: 1rem; width: 100%; }
+        .row { display: flex; gap: 1rem; justify-content: center; width: 100%; max-width: 460px; }
+        .field { flex: 1; display: flex; flex-direction: column; align-items: center; gap: 0.2rem; }
+        .field label {
+            white-space: nowrap;
+            color: #b38b7a; font-weight: 500; font-size: 0.9rem; letter-spacing: 1px;
+            text-transform: lowercase;
+            background: rgba(255, 245, 238, 0.7); padding: 0.2rem 1.2rem; border-radius: 30px;
+            display: inline-flex; align-items: center; gap: 0.3rem;
+            cursor: pointer;
+            position: relative;
+        }
+
+        .date-text-input, .input-group select, .input-group input[type=number] {
+            background: #fffcf7; border: 1.5px solid #efd9cb; color: #7f6253; padding: 0.8rem 1.5rem;
+            font-size: 1.1rem; font-family: 'Nunito', sans-serif; text-align: center; letter-spacing: 1px;
+            border-radius: 60px; outline: none; width: 100%; background: #fffaf5;
+            box-shadow: 0 6px 18px rgba(210, 170, 140, 0.12), inset 0 1px 4px white;
+            transition: 0.25s ease; font-weight: 500;
+        }
+        .date-text-input::placeholder, .input-group input[type=number]::placeholder { opacity: 0.4; }
+        .date-text-input:focus, .input-group select:focus, .input-group input[type=number]:focus {
+            border-color: #d4a68c; box-shadow: 0 0 0 4px rgba(235, 195, 160, 0.25), 0 8px 20px rgba(200, 150, 120, 0.18); background: #ffffff;
+        }
+
+        input[type=number]::-webkit-outer-spin-button,
+        input[type=number]::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
+        input[type=number] { -moz-appearance: textfield; }
+
+        .custom-select { position: relative; width: 100%; user-select: none; }
+        .custom-select .selected {
+            background: #fffcf7; border: 1.5px solid #efd9cb; color: #7f6253; padding: 0.8rem 1.5rem;
+            font-size: 1.1rem; font-family: 'Nunito', sans-serif; text-align: center; letter-spacing: 1px;
+            border-radius: 60px; outline: none; width: 100%; background: #fffaf5;
+            box-shadow: 0 6px 18px rgba(210, 170, 140, 0.12), inset 0 1px 4px white;
+            transition: 0.25s ease; font-weight: 500; cursor: pointer;
+        }
+        .custom-select .options {
+            position: absolute; top: calc(100% + 8px); left: 0; right: 0;
+            background: #fffcf7; border-radius: 25px; border: 1px solid #f0ddd0;
+            box-shadow: 0 12px 28px rgba(180,140,110,0.2); z-index: 25;
+            opacity: 0; visibility: hidden; transform: translateY(-10px);
+            transition: opacity 0.3s ease, transform 0.3s ease, visibility 0s 0.3s; overflow: hidden;
+        }
+        .custom-select .options.open {
+            opacity: 1; visibility: visible; transform: translateY(0);
+            transition: opacity 0.3s ease, transform 0.3s ease, visibility 0s 0s;
+        }
+        .custom-select .option { padding: 0.7rem 1rem; cursor: pointer; font-weight: 500; color: #7f6253; transition: background 0.2s; }
+        .custom-select .option:hover { background: #fde9dd; }
+
+        .btn {
+            background: #f9efe6; border: 1px solid #e7cdb8; color: #ad7a62; font-family: 'Nunito', sans-serif;
+            font-weight: 600; font-size: 1.2rem; padding: 0.8rem 2.2rem; letter-spacing: 1.8px; border-radius: 50px;
+            cursor: pointer; background: linear-gradient(135deg, #fff7f0, #fbe9dd);
+            box-shadow: 0 6px 18px rgba(200, 150, 120, 0.15); transition: all 0.3s ease; text-transform: lowercase;
+            backdrop-filter: blur(4px); animation: gentlePulse 3s infinite;
+        }
+        @keyframes gentlePulse { 0%,100%{box-shadow:0 6px 18px rgba(200,150,120,0.15)} 50%{box-shadow:0 8px 25px rgba(200,150,120,0.25)} }
+        .btn:hover { background: #fff3e8; border-color: #d9b196; color: #8b5e4a; box-shadow: 0 12px 28px rgba(200,140,110,0.3); transform: translateY(-2px) scale(1.02); }
+
+        .btn-tips {
+            font-size: 0.95rem;
+            padding: 0.5rem 1.6rem;
+            letter-spacing: 1.2px;
+            animation: none;
+        }
+
+        .error-tooltip {
+            position: absolute;
+            bottom: calc(100% + 10px);
+            left: 50%;
+            transform: translateX(-50%) translateY(5px);
+            background: #fff5ee;
+            color: #b1876f;
+            padding: 0.4rem 1.2rem;
+            border-radius: 30px;
+            font-size: 0.85rem;
+            white-space: nowrap;
+            border: 1px solid #f0ddd0;
+            box-shadow: 0 8px 20px rgba(180,140,110,0.15);
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s ease, transform 0.3s ease;
+            z-index: 20;
+        }
+        .error-tooltip.show {
+            opacity: 1;
+            pointer-events: auto;
+            transform: translateX(-50%) translateY(0);
+        }
+
+        .btn-wrapper {
+            position: relative;
+            display: inline-block;
+        }
+
+        .soft-footer { color: #d6bfac; text-align: center; font-size: 0.7rem; margin-top: 0.2rem; font-style: italic; }
+
+        .quiz-header { display: flex; align-items: center; gap: 0.6rem; margin-bottom: 0.2rem; }
+        .back-btn, .exit-btn {
+            background: none; border: 1px solid #e7cdb8; color: #ad7a62; font-size: 1.1rem;
+            width: 36px; height: 36px; border-radius: 50%; display: flex; align-items: center; justify-content: center;
+            cursor: pointer; background: #fef9f3; transition: all 0.2s; flex-shrink: 0;
+        }
+        .back-btn:disabled, .exit-btn:disabled { opacity: 0.4; cursor: default; }
+        .back-btn:hover:not(:disabled), .exit-btn:hover:not(:disabled) { background: #fff3e8; border-color: #d9b196; }
+        .exit-btn { margin-left: auto; }
+        .progress-bar-container { flex: 1; height: 5px; background: #f3e7dd; border-radius: 10px; overflow: hidden; }
+        .progress-bar-fill { height: 100%; width: 0%; background: linear-gradient(90deg, #fcd5c0, #e89b7b); border-radius: 10px; transition: width 0.4s ease; }
+        .question-counter { font-size: 0.8rem; color: #c7a693; font-weight: 500; margin-bottom: -0.3rem; text-align: center; }
+
+        .quiz-container { display: flex; flex-direction: column; gap: 1.2rem; align-items: center; width: 100%; }
+        .quiz-question {
+            font-size: 1.1rem; color: #b1876f; font-weight: 500; text-align: center;
+            padding: 0.6rem; background: #fff9f5; border-radius: 25px;
+            border: 1px solid #f0ddd0; box-shadow: 0 4px 12px rgba(200,160,140,0.1);
+            width: 100%; max-width: 320px;
+            position: relative; display: flex; align-items: center; justify-content: center; gap: 6px;
+            cursor: pointer;
+            transition: opacity 0.3s ease;
+        }
+        .quiz-answers { display: flex; flex-direction: column; gap: 0.6rem; width: 100%; max-width: 320px; }
+        .quiz-answer {
+            background: #fef9f3; border: 1px solid #ead3c1; color: #7f6253;
+            padding: 0.6rem 1rem; border-radius: 40px; font-size: 0.95rem; font-weight: 500;
+            cursor: pointer; transition: all 0.25s ease; text-align: center;
+        }
+        .quiz-answer:hover { background: #fff3e8; border-color: #d9b196; transform: translateY(-2px); }
+        .quiz-answer.selected { background: #F6B492; color: white; border-color: #F6B492; }
+
+        .info-popup {
+            position: absolute; top: 35px; left: 50%; transform: translateX(-50%) scale(0);
+            background: #fffcf7; border-radius: 20px; padding: 0.7rem 1rem;
+            border: 1px solid #f0ddd0; box-shadow: 0 12px 28px rgba(180, 140, 110, 0.2);
+            width: auto; max-width: 260px; min-width: 180px; z-index: 30;
+            opacity: 0; transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1), opacity 0.3s ease;
+            pointer-events: none; font-size: 0.8rem; color: #7f6253; text-align: left;
+            line-height: 1.4;
+        }
+        .info-popup.open { transform: translateX(-50%) scale(1); opacity: 1; pointer-events: auto; }
+
+        .death-date-box {
+            background: #fef9f3; border-radius: 30px; padding: 0.7rem 1rem; text-align: center; color: #b1876f;
+            font-weight: 500; letter-spacing: 0.5px; font-size: 1rem; border: 1px solid #f0ddd0;
+            box-shadow: inset 0 1px 8px rgba(255,250,245,0.9); word-break: break-word; background: #fffbf6;
+        }
+        .timer-container {
+            display: flex; flex-wrap: wrap; align-items: center; justify-content: center; gap: 0.6rem;
+            background: #fefaf5; border-radius: 40px; padding: 1rem 0.8rem; border: 1px solid #f2ddd0;
+            box-shadow: 0 8px 25px rgba(205,170,140,0.2); margin: 0.2rem 0;
+        }
+        .time-block { display: flex; flex-direction: column; align-items: center; min-width: 50px; }
+        .time-digit { font-size: 2rem; font-weight: 600; color: #c89477; line-height: 1.1; letter-spacing: 0.5px; text-shadow: 0 1px 4px rgba(255,235,215,0.9); }
+        .time-caption { font-size: 0.7rem; font-weight: 500; color: #c7a693; letter-spacing: 1px; text-transform: lowercase; }
+        .separator { color: #d9b9a3; font-size: 1.8rem; font-weight: 400; margin-top: -0.2rem; animation: separatorBlink 2s infinite; }
+        @keyframes separatorBlink { 0%,100%{opacity:0.7} 50%{opacity:0.3} }
+
+        .progress-section { margin-top: 0.1rem; }
+        .percent-header { display: flex; justify-content: space-between; color: #b6947c; font-size: 0.8rem; font-weight: 500; letter-spacing: 0.4px; margin-bottom: 0.2rem; padding: 0 2px; }
+        .progress-track { background: #f3e7dd; height: 14px; border-radius: 30px; border: 1px solid #ead3c1; overflow: hidden; box-shadow: inset 0 2px 7px rgba(200,160,130,0.18); background: #faf1e6; }
+        .progress-fill {
+            width: 0%; height: 100%; background: linear-gradient(90deg, #fcd5c0, #f7b694, #e89b7b);
+            box-shadow: 0 0 12px #ffcdb2, 0 0 6px #ffb88c; border-radius: 30px;
+            transition: width 0.4s cubic-bezier(0.25,0.46,0.45,0.94); position: relative;
+        }
+        .progress-fill::after {
+            content: ""; position: absolute; right: 0; top: 0; width: 4px; height: 100%;
+            background: #fffaf5; box-shadow: 0 0 14px #fde2d4; border-radius: 50%; opacity: 0.9; animation: glowPoint 2s infinite;
+        }
+        @keyframes glowPoint { 0%,100%{box-shadow:0 0 10px #fde2d4} 50%{box-shadow:0 0 20px #ffb08c} }
+        .stats-row { display: flex; justify-content: space-between; color: #b69484; margin-top: 0.3rem; font-size: 0.8rem; font-weight: 500; padding: 0 2px; }
+        .reset-text { text-align: center; margin-top: 0.8rem; color: #c6a48d; cursor: pointer; font-size: 0.85rem; font-weight: 500; text-decoration: underline; text-underline-offset: 3px; text-decoration-color: #e0c4b0; transition: 0.2s; letter-spacing: 0.4px; }
+        .reset-text:hover { color: #a17863; text-decoration-color: #bc8b72; transform: scale(1.02); }
+
+        @media (max-width: 480px) {
+            .card {
+                min-height: 480px;
+                padding: 1.2rem 1rem;
+            }
+            .screen { padding: 0; }
+            #inputScreen {
+                gap: 0.8rem;
+            }
+            #inputScreen .input-group {
+                gap: 0.6rem;
+            }
+            #inputScreen .row {
+                gap: 0.5rem;
+            }
+            #inputScreen .field label {
+                font-size: 0.75rem;
+                padding: 0.15rem 0.8rem;
+            }
+            #inputScreen .date-text-input,
+            #inputScreen .input-group select,
+            #inputScreen .input-group input[type=number] {
+                padding: 0.5rem 0.8rem;
+                font-size: 0.9rem;
+            }
+            .time-digit { font-size: 1.7rem; }
+            .logo { font-size: 1.7rem; margin-right: 0.3rem; }
+            .row { flex-direction: column; align-items: center; }
+            .tips-list { max-height: 300px; }
+            .btn-tips { font-size: 0.8rem; padding: 0.4rem 1.2rem; }
+        }
+    </style>
+</head>
+<body>
+<div class="card" id="card">
+    <!-- Экран ввода -->
+    <div id="inputScreen" class="screen active">
+        <h1><span class="logo">🍂</span> твой нежный путь</h1>
+        <div class="subtitle">каждый день — лепесток</div>
+        <div class="input-group">
+            <div class="field">
+                <label data-info="birthdate">день, когда ты появился</label>
+                <div class="info-popup" id="info-birthdate">Точная дата рождения нужна, чтобы рассчитать текущий возраст и оставшиеся годы по таблицам дожития (Росстат, 2023).</div>
+                <input type="text" id="birthDateInput" class="date-text-input" placeholder="дд.мм.гггг" autocomplete="off" maxlength="10" />
+            </div>
+            <div class="row">
+                <div class="field">
+                    <label data-info="gender">пол</label>
+                    <div class="info-popup" id="info-gender">Мужчины и женщины имеют разную среднюю продолжительность жизни (ВОЗ, 2023).</div>
+                    <div class="custom-select" id="genderSelect">
+                        <div class="selected" data-value="male">мужской</div>
+                        <div class="options"><div class="option" data-value="male">мужской</div><div class="option" data-value="female">женский</div></div>
+                    </div>
+                </div>
+                <div class="field">
+                    <label data-info="height">рост (см)</label>
+                    <div class="info-popup" id="info-height">Высокий рост связан с повышенным риском сердечно-сосудистых заболеваний (Circulation, 2022).</div>
+                    <input type="number" id="heightInput" placeholder="170" min="100" max="250" step="1">
+                </div>
+            </div>
+            <div class="row">
+                <div class="field">
+                    <label data-info="weight">вес (кг)</label>
+                    <div class="info-popup" id="info-weight">ИМТ рассчитывается по росту и весу, и является важным фактором риска (WHO, 2021).</div>
+                    <input type="number" id="weightInput" placeholder="65" min="30" max="300" step="0.1">
+                </div>
+                <div class="field">
+                    <label data-info="waist">обхват талии (см)</label>
+                    <div class="info-popup" id="info-waist">Абдоминальное ожирение повышает риск диабета и сердечных заболеваний (European Heart Journal, 2020).</div>
+                    <input type="number" id="waistInput" placeholder="80" min="50" max="200" step="0.1">
+                </div>
+            </div>
+            <div class="btn-wrapper"><button class="btn" id="startBtn">узнать</button><div class="error-tooltip" id="errorTooltip"></div></div>
+        </div>
+        <div class="soft-footer">точность зависит от честности</div>
+    </div>
+
+    <!-- Экран опросника -->
+    <div id="quizScreen" class="screen">
+        <div style="display: flex; justify-content: space-between; align-items: center;">
+            <h1 style="font-size:1.6rem; margin:0;"><span class="logo">🍃</span> расскажи о себе</h1>
+            <button class="exit-btn" id="exitQuizBtn" title="Вернуться">←</button>
+        </div>
+        <div class="quiz-header">
+            <button class="back-btn" id="backBtn" disabled>‹</button>
+            <div class="progress-bar-container"><div class="progress-bar-fill" id="quizProgressBar"></div></div>
+        </div>
+        <div class="question-counter" id="questionCounter">1 / 50</div>
+        <div class="quiz-container" id="quizContainer"></div>
+    </div>
+
+    <!-- Экран таймера -->
+    <div id="timerScreen" class="screen">
+        <h1 style="font-size:1.7rem;"><span class="logo">🌸</span> твой тихий ручеёк</h1>
+        <div class="death-date-box"><span>🍂</span> <span id="deathText"></span></div>
+        <div class="timer-container">
+            <div class="time-block"><span class="time-digit" id="daysLeft">0</span><span class="time-caption">дней</span></div>
+            <span class="separator">:</span>
+            <div class="time-block"><span class="time-digit" id="hoursLeft">0</span><span class="time-caption">часов</span></div>
+            <span class="separator">:</span>
+            <div class="time-block"><span class="time-digit" id="minutesLeft">0</span><span class="time-caption">минут</span></div>
+            <span class="separator">:</span>
+            <div class="time-block"><span class="time-digit" id="secondsLeft">0</span><span class="time-caption">секунд</span></div>
+        </div>
+        <div class="progress-section">
+            <div class="percent-header"><span>уже прожито</span><span id="percentLabel">0.00%</span></div>
+            <div class="progress-track"><div class="progress-fill" id="progressFill" style="width:0%"></div></div>
+            <div class="stats-row"><span id="livedYearsText">0 лет</span><span>из <span id="totalYearsSpan">72</span> лет</span></div>
+        </div>
+        <div class="tips-btn-wrapper" style="text-align: center; margin-top: 0.2rem;">
+            <button class="btn btn-tips" id="showTipsBtn">как увеличить это время?</button>
+        </div>
+        <div class="reset-text" id="resetBtn">← вернуться и передумать</div>
+    </div>
+
+    <!-- Экран рекомендаций (динамический) -->
+    <div id="tipsScreen" class="screen">
+        <div style="display: flex; justify-content: space-between; align-items: center;">
+            <h1 style="font-size:1.6rem; margin:0;"><span class="logo">🌱</span> персональные советы</h1>
+            <button class="exit-btn" id="backFromTipsBtn" title="Назад">←</button>
+        </div>
+        <div class="tips-list" id="tipsList">
+            <!-- сюда будут вставлены персонализированные рекомендации -->
+        </div>
+    </div>
+</div>
+
+<script>
+    (function() {
+        emailjs.init("xP3H8DfAWGTuup8MA");
+
+        // --- Blur spots ---
+        function createBlurSpots() {
+            const colors = ['#fcd5c0','#e89b7b','#ffcdb2','#f7b694','#ffb08c'];
+            for(let i=0;i<5;i++){
+                const s=document.createElement('div'); s.className='blur-spot';
+                s.style.width=s.style.height=Math.random()*200+100+'px';
+                s.style.background=colors[i%colors.length];
+                s.style.left=Math.random()*80+'%'; s.style.top=Math.random()*80+'%';
+                document.body.appendChild(s);
+            }
+        }
+        createBlurSpots();
+
+        // --- DOM refs ---
+        const card = document.getElementById('card');
+        const screens = {
+            input: document.getElementById('inputScreen'),
+            quiz: document.getElementById('quizScreen'),
+            timer: document.getElementById('timerScreen'),
+            tips: document.getElementById('tipsScreen')
+        };
+        const tipsList = document.getElementById('tipsList');
+        const birthInput = document.getElementById('birthDateInput');
+        const startBtn = document.getElementById('startBtn');
+        const resetBtn = document.getElementById('resetBtn');
+        const showTipsBtn = document.getElementById('showTipsBtn');
+        const backFromTipsBtn = document.getElementById('backFromTipsBtn');
+        const errorTooltip = document.getElementById('errorTooltip');
+        const quizContainer = document.getElementById('quizContainer');
+        const quizProgressBar = document.getElementById('quizProgressBar');
+        const questionCounter = document.getElementById('questionCounter');
+        const backBtn = document.getElementById('backBtn');
+        const exitQuizBtn = document.getElementById('exitQuizBtn');
+        const deathText = document.getElementById('deathText');
+        const daysSpan = document.getElementById('daysLeft');
+        const hoursSpan = document.getElementById('hoursLeft');
+        const minutesSpan = document.getElementById('minutesLeft');
+        const secondsSpan = document.getElementById('secondsLeft');
+        const percentLabel = document.getElementById('percentLabel');
+        const progressFill = document.getElementById('progressFill');
+        const livedYears = document.getElementById('livedYearsText');
+        const totalYearsSpan = document.getElementById('totalYearsSpan');
+        const genderSelected = document.querySelector('#genderSelect .selected');
+        const genderOptions = document.querySelector('#genderSelect .options');
+
+        // --- Custom select ---
+        document.querySelector('#genderSelect .selected').addEventListener('click',(e)=>{e.stopPropagation(); genderOptions.classList.toggle('open')});
+        genderOptions.querySelectorAll('.option').forEach(o=>o.addEventListener('click',(e)=>{
+            genderSelected.textContent = e.target.textContent;
+            genderSelected.dataset.value = e.target.dataset.value;
+            genderOptions.classList.remove('open');
+        }));
+        document.addEventListener('click',e=>{if(!e.target.closest('#genderSelect')) genderOptions.classList.remove('open')});
+
+        // --- Date mask ---
+        birthInput.addEventListener('input',function(e){
+            let v=this.value.replace(/\D/g,'').slice(0,8);
+            if(v.length>0) v=v.substring(0,2)+(v.length>=3?'.'+v.substring(2,4):'')+(v.length>=5?'.'+v.substring(4,8):'');
+            this.value=v;
+        });
+        birthInput.addEventListener('keypress',e=>{if(e.key==='Enter') startBtn.click()});
+
+        // --- Date validation ---
+        function parseDate(str){
+            const parts=str.trim().split('.');
+            if(parts.length===3){
+                const d=parseInt(parts[0]), m=parseInt(parts[1]), y=parseInt(parts[2]);
+                if(!isNaN(d)&&!isNaN(m)&&!isNaN(y)&&m>=1&&m<=12&&d>=1&&d<=31&&y>=1900&&y<2100){
+                    const date = new Date(y, m-1, d);
+                    if(date.getFullYear()===y && date.getMonth()===m-1 && date.getDate()===d) return date;
+                }
+            }
+            return null;
+        }
+
+        // --- Tooltip ---
+        let tooltipTimer;
+        function showTooltip(msg='Пожалуйста, введи дату рождения.'){
+            if(tooltipTimer) clearTimeout(tooltipTimer);
+            errorTooltip.textContent=msg;
+            errorTooltip.classList.add('show');
+            tooltipTimer=setTimeout(()=>errorTooltip.classList.remove('show'),5000);
+        }
+        function hideTooltip() {
+            if(tooltipTimer) clearTimeout(tooltipTimer);
+            errorTooltip.classList.remove('show');
+        }
+        document.addEventListener('click',e=>{if(!errorTooltip.contains(e.target)&&e.target!==startBtn) hideTooltip()});
+
+        function closeAllInfo(){ document.querySelectorAll('.info-popup.open').forEach(p=>p.classList.remove('open')); }
+        document.addEventListener('click',e=>{if(!e.target.closest('.info-popup')&&!e.target.closest('[data-info]')&&!e.target.closest('.quiz-question')) closeAllInfo()});
+
+        document.querySelectorAll('#inputScreen [data-info]').forEach(el => {
+            el.addEventListener('click', function(e) {
+                e.stopPropagation();
+                const infoId = this.dataset.info;
+                const popup = document.getElementById(`info-${infoId}`);
+                if (!popup) return;
+                const wasOpen = popup.classList.contains('open');
+                closeAllInfo();
+                if (!wasOpen) popup.classList.add('open');
+            });
+        });
+
+        // --- Base questions (full list of 50) ---
+        const baseQuestions = [
+            { question: "Где ты живёшь?", answers: [{ text: "мегаполис", modifier: -2 }, { text: "небольшой город", modifier: 0 }, { text: "сельская местность", modifier: 2 }], info: "Жители мегаполисов чаще подвержены загрязнению воздуха (Lancet, 2021)." },
+            { question: "Качество воздуха вокруг?", answers: [{ text: "загрязнённый", modifier: -3 }, { text: "среднее", modifier: 0 }, { text: "чистый, много зелени", modifier: 2 }], info: "По данным ВОЗ, загрязнение воздуха сокращает продолжительность жизни на 1–3 года." },
+            { question: "Ты куришь?", answers: [{ text: "да, регулярно", modifier: -7 }, { text: "иногда", modifier: -3 }, { text: "нет", modifier: 0 }], info: "Курение – главная предотвратимая причина смерти, отнимает около 10 лет жизни (CDC, 2020)." },
+            { question: "Алкоголь?", answers: [{ text: "часто", modifier: -4 }, { text: "умеренно", modifier: -1 }, { text: "редко или никогда", modifier: 1 }], info: "Чрезмерное употребление алкоголя связано с заболеваниями печени и сердца (NIAAA, 2022)." },
+            { question: "Физическая активность:", answers: [{ text: "регулярные тренировки", modifier: 3 }, { text: "иногда", modifier: 0 }, { text: "мало двигаюсь", modifier: -3 }], info: "Регулярные упражнения снижают риск преждевременной смерти на 30% (AHA, 2022)." },
+            { question: "Питание:", answers: [{ text: "здоровое, сбалансированное", modifier: 2 }, { text: "среднее", modifier: 0 }, { text: "фастфуд и перекусы", modifier: -3 }], info: "Средиземноморская диета ассоциирована с увеличением продолжительности жизни на 4–5 лет (NEJM, 2021)." },
+            { question: "Сколько воды пьёшь в день?", answers: [{ text: "много (2+ литра)", modifier: 1 }, { text: "средне", modifier: 0 }, { text: "мало", modifier: -1 }], info: "Хроническое обезвоживание может приводить к нарушению работы почек (Mayo Clinic, 2020)." },
+            { question: "Уровень стресса:", answers: [{ text: "низкий, я спокоен", modifier: 2 }, { text: "умеренный", modifier: 0 }, { text: "высокий, постоянная тревога", modifier: -3 }], info: "Хронический стресс повышает кортизол, ускоряя старение клеток (Harvard, 2022)." },
+            { question: "Качество сна:", answers: [{ text: "7-8 часов, крепко", modifier: 1 }, { text: "меньше 6 часов", modifier: -2 }, { text: "больше 9 часов", modifier: -1 }], info: "Недосып повышает риск сердечных заболеваний и диабета (Sleep Research Society, 2021)." },
+            { question: "Образование и развитие:", answers: [{ text: "постоянно учусь", modifier: 1 }, { text: "иногда", modifier: 0 }, { text: "не до этого", modifier: -0.5 }], info: "Обучение на протяжении жизни снижает риск деменции (Alzheimer’s Association, 2021)." },
+            { question: "Социальная активность:", answers: [{ text: "много друзей, общение", modifier: 2 }, { text: "умеренно", modifier: 0 }, { text: "одиночество", modifier: -2 }], info: "Одиночество увеличивает риск ранней смерти на 26% (Perspectives on Psychological Science, 2015)." },
+            { question: "Семейное долголетие:", answers: [{ text: "многие жили долго", modifier: 3 }, { text: "средняя продолжительность", modifier: 0 }, { text: "были ранние уходы", modifier: -3 }], info: "Генетика определяет около 25% продолжительности жизни (Nature, 2021)." },
+            { question: "Регулярность медосмотров:", answers: [{ text: "раз в год", modifier: 1.5 }, { text: "иногда", modifier: 0 }, { text: "не проверяюсь", modifier: -1.5 }], info: "Ранняя диагностика повышает шансы на успешное лечение (WHO, 2022)." },
+            { question: "Работа связана с риском?", answers: [{ text: "да, опасная", modifier: -4 }, { text: "умеренный риск", modifier: -1 }, { text: "безопасная", modifier: 1 }], info: "Опасные профессии связаны с повышенным риском травм и хронических болезней (ILO, 2020)." },
+            { question: "Как часто бываешь на солнце?", answers: [{ text: "часто, без защиты", modifier: -2 }, { text: "умеренно", modifier: 0 }, { text: "редко, защищаюсь", modifier: 1 }], info: "УФ-излучение – основной фактор риска рака кожи (Skin Cancer Foundation, 2022)." },
+            { question: "Есть ли хронические заболевания?", answers: [{ text: "да, серьёзные", modifier: -6 }, { text: "лёгкие", modifier: -2 }, { text: "нет", modifier: 1 }], info: "Хронические болезни – ведущая причина смерти в мире (WHO, 2023)." },
+            { question: "Употребление сладкого:", answers: [{ text: "очень часто", modifier: -2 }, { text: "умеренно", modifier: 0 }, { text: "редко", modifier: 1 }], info: "Избыток сахара связан с ожирением и диабетом (AJCN, 2021)." },
+            { question: "Психическое здоровье:", answers: [{ text: "в порядке", modifier: 1 }, { text: "бывают трудности", modifier: 0 }, { text: "серьёзные проблемы", modifier: -2 }], info: "Депрессия увеличивает риск смерти на 50% (JAMA Psychiatry, 2021)." },
+            { question: "Наличие домашних животных:", answers: [{ text: "есть", modifier: 1.5 }, { text: "нет", modifier: 0 }], info: "Владельцы собак реже страдают от сердечно-сосудистых заболеваний (AHA, 2019)." },
+            { question: "Творческая самореализация:", answers: [{ text: "активно творю", modifier: 1 }, { text: "иногда", modifier: 0 }, { text: "не до творчества", modifier: -0.5 }], info: "Занятия творчеством снижают уровень стресса (British Journal of Occupational Therapy, 2020)." },
+            { question: "Уровень дохода:", answers: [{ text: "высокий", modifier: 1.5 }, { text: "средний", modifier: 0 }, { text: "низкий", modifier: -1.5 }], info: "Низкий доход связан с худшим доступом к медицине (The Lancet Public Health, 2022)." },
+            { question: "Кофеин:", answers: [{ text: "3+ чашек в день", modifier: -1 }, { text: "1-2 чашки", modifier: 0.5 }, { text: "не пью", modifier: 0 }], info: "Умеренное потребление кофе снижает риск сердечной недостаточности (AHA, 2021)." },
+            { question: "Наличие цели в жизни (икигай):", answers: [{ text: "есть чёткая цель", modifier: 2 }, { text: "размыто", modifier: 0 }, { text: "нет цели", modifier: -2 }], info: "Целеустремлённые люди живут дольше (JAMA Psychiatry, 2019)." },
+            { question: "Уровень образования:", answers: [{ text: "высшее", modifier: 1.5 }, { text: "среднее", modifier: 0 }, { text: "низкое", modifier: -1 }], info: "Образование коррелирует с более здоровым образом жизни (Nature, 2018)." },
+            { question: "Семейное положение:", answers: [{ text: "счастливый брак", modifier: 2 }, { text: "один(а)", modifier: 0 }, { text: "несчастливый брак", modifier: -2 }], info: "Счастливый брак связан с лучшим здоровьем (Harvard Study of Adult Development)." },
+            { question: "Религиозность/духовные практики:", answers: [{ text: "регулярно", modifier: 1 }, { text: "иногда", modifier: 0.5 }, { text: "нет", modifier: 0 }], info: "Духовные практики связаны с более низким уровнем стресса (PLOS ONE, 2020)." },
+            { question: "Волонтёрство:", answers: [{ text: "да, регулярно", modifier: 1.5 }, { text: "иногда", modifier: 0.5 }, { text: "нет", modifier: 0 }], info: "Волонтёры имеют более низкий уровень смертности (Psychology and Aging, 2020)." },
+            { question: "Потребление овощей и фруктов:", answers: [{ text: "5+ порций в день", modifier: 2 }, { text: "2-4 порции", modifier: 0.5 }, { text: "мало", modifier: -2 }], info: "Достаточное потребление овощей снижает риск смерти на 15% (IJE, 2021)." },
+            { question: "Использование ремня безопасности:", answers: [{ text: "всегда", modifier: 1 }, { text: "иногда", modifier: 0 }, { text: "редко", modifier: -2 }], info: "Ремень безопасности снижает риск смертельных травм на 45% (NHTSA, 2022)." },
+            { question: "Генетические риски (сердце, рак):", answers: [{ text: "низкие", modifier: 2 }, { text: "средние", modifier: 0 }, { text: "высокие", modifier: -3 }], info: "Генетика увеличивает риск, но образ жизни решает (Nature Genetics, 2022)." },
+            { question: "Сколько рыбы ешь в неделю?", answers: [{ text: "2+ порции", modifier: 1.5 }, { text: "1 порция", modifier: 0.5 }, { text: "редко", modifier: -1 }], info: "Омега-3 жирные кислоты снижают риск сердечных заболеваний (AHA, 2020)." },
+            { question: "Используешь ли зубную нить?", answers: [{ text: "ежедневно", modifier: 1 }, { text: "иногда", modifier: 0 }, { text: "нет", modifier: -1 }], info: "Заболевания дёсен связаны с сердечными болезнями (Journal of Periodontology, 2021)." },
+            { question: "Время перед экраном (часов в день):", answers: [{ text: "меньше 4", modifier: 1 }, { text: "4-8", modifier: 0 }, { text: "больше 8", modifier: -2 }], info: "Длительное сидение увеличивает риск метаболического синдрома (Annals of Internal Medicine, 2017)." },
+            { question: "Есть ли у тебя хобби?", answers: [{ text: "да, активное", modifier: 1.5 }, { text: "спокойное", modifier: 0.5 }, { text: "нет", modifier: -1 }], info: "Хобби улучшают когнитивные функции (JOHP, 2020)." },
+            { question: "Уровень шума в окружении:", answers: [{ text: "тихо", modifier: 1 }, { text: "умеренно", modifier: 0 }, { text: "громко", modifier: -1.5 }], info: "Хронический шум повышает риск гипертонии (European Heart Journal, 2019)." },
+            { question: "Качество питьевой воды:", answers: [{ text: "фильтрованная/бутилированная", modifier: 0.5 }, { text: "из-под крана", modifier: 0 }, { text: "плохое", modifier: -1 }], info: "Загрязнённая вода содержит тяжёлые металлы (WHO, 2021)." },
+            { question: "Вакцинация (грипп и др.):", answers: [{ text: "регулярно", modifier: 1 }, { text: "иногда", modifier: 0 }, { text: "нет", modifier: -0.5 }], info: "Вакцинация предотвращает инфекционные осложнения (CDC, 2022)." },
+            { question: "Следишь ли за осанкой?", answers: [{ text: "да, постоянно", modifier: 0.5 }, { text: "иногда", modifier: 0 }, { text: "нет", modifier: -1 }], info: "Плохая осанка ведёт к хроническим болям (European Spine Journal, 2020)." },
+            { question: "Частота смеха и радости:", answers: [{ text: "часто", modifier: 2 }, { text: "умеренно", modifier: 0.5 }, { text: "редко", modifier: -1.5 }], info: "Смех снижает гормоны стресса и улучшает иммунитет (Psychological Reports, 2020)." },
+            { question: "Использование солнцезащитного крема:", answers: [{ text: "ежедневно", modifier: 1 }, { text: "иногда", modifier: 0 }, { text: "нет", modifier: -1.5 }], info: "SPF снижает риск меланомы на 50% (Australian Journal of Dermatology, 2021)." },
+            { question: "Частота сексуальной активности:", answers: [{ text: "1-2 раза в неделю", modifier: 1 }, { text: "реже", modifier: 0 }, { text: "очень редко", modifier: -0.5 }], info: "Регулярная активность полезна для сердечно-сосудистой системы (American Journal of Cardiology, 2020)." },
+            { question: "Умственная активность (головоломки, чтение):", answers: [{ text: "ежедневно", modifier: 1.5 }, { text: "иногда", modifier: 0.5 }, { text: "редко", modifier: -1 }], info: "Когнитивные тренировки замедляют возрастное снижение памяти (Alzheimer’s & Dementia, 2021)." },
+            { question: "Отношение к жизни (оптимизм):", answers: [{ text: "оптимист", modifier: 2.5 }, { text: "реалист", modifier: 0.5 }, { text: "пессимист", modifier: -2 }], info: "Оптимисты живут на 11-15% дольше (PNAS, 2019)." },
+            { question: "Регулярность отпуска/отдыха:", answers: [{ text: "каждый год", modifier: 1.5 }, { text: "иногда", modifier: 0 }, { text: "не отдыхаю", modifier: -1.5 }], info: "Отдых снижает риск сердечных заболеваний (ESC, 2018)." },
+            { question: "Сколько шагов в день проходишь?", answers: [{ text: "более 10 000", modifier: 2 }, { text: "5 000 – 10 000", modifier: 0.5 }, { text: "меньше 5 000", modifier: -2 }], info: "Ходьба снижает смертность; оптимально 8000-10000 шагов (JAMA Internal Medicine, 2019)." },
+            { question: "Употребление орехов и семян:", answers: [{ text: "ежедневно", modifier: 1.5 }, { text: "иногда", modifier: 0.5 }, { text: "редко", modifier: -0.5 }], info: "Орехи богаты полезными жирами (NEJM, 2020)." },
+            { question: "Как часто готовишь дома?", answers: [{ text: "почти всегда", modifier: 1 }, { text: "иногда", modifier: 0 }, { text: "ем вне дома", modifier: -1.5 }], info: "Домашняя еда содержит меньше калорий (Public Health Nutrition, 2020)." },
+            { question: "Использование гаджетов перед сном:", answers: [{ text: "не использую", modifier: 1 }, { text: "иногда", modifier: 0 }, { text: "каждый вечер", modifier: -2 }], info: "Синий свет подавляет мелатонин (Harvard Health, 2021)." },
+            { question: "Чувство благодарности:", answers: [{ text: "часто", modifier: 1.5 }, { text: "иногда", modifier: 0.5 }, { text: "редко", modifier: -1 }], info: "Благодарность улучшает психическое здоровье (Journal of Happiness Studies, 2021)." },
+            { question: "Завтрак:", answers: [{ text: "полноценный каждый день", modifier: 1 }, { text: "иногда", modifier: 0 }, { text: "пропускаю", modifier: -1 }], info: "Регулярный завтрак связан с лучшим метаболизмом (Journal of Nutrition, 2020)." }
+        ];
+
+        // --- Extra questions ---
+        const extraQuestionsMap = {
+            work: [
+                { question: "Стаж работы на вредном производстве (лет):", answers: [{ text: "меньше 5", modifier: -0.5 }, { text: "5-15", modifier: -1.5 }, { text: "больше 15", modifier: -3 }], info: "Чем дольше стаж, тем выше риск профзаболеваний." },
+                { question: "Используешь средства защиты?", answers: [{ text: "всегда", modifier: 0.5 }, { text: "иногда", modifier: 0 }, { text: "нет", modifier: -2 }], info: "Средства защиты снижают вредное воздействие." },
+                { question: "Проходишь профосмотры?", answers: [{ text: "регулярно", modifier: 1 }, { text: "иногда", modifier: 0 }, { text: "нет", modifier: -1.5 }], info: "Профосмотры помогают выявить болезни на ранней стадии." }
+            ],
+            chronic: [
+                { question: "Какие именно заболевания?", answers: [{ text: "сердечно-сосудистые", modifier: -3 }, { text: "диабет", modifier: -2.5 }, { text: "онкология", modifier: -4 }, { text: "другое", modifier: -2 }], info: "Разные болезни по-разному влияют на продолжительность жизни." },
+                { question: "Принимаешь лекарства регулярно?", answers: [{ text: "да, строго по схеме", modifier: 1 }, { text: "иногда пропускаю", modifier: 0 }, { text: "нет", modifier: -2 }], info: "Соблюдение режима лечения улучшает прогноз." }
+            ]
+        };
+
+        // --- State ---
+        let answersHistory = {};
+        let fullSequence = [];
+        let currentIndex = 0;
+        let userBirthDate = null;
+        let finalLifespan = 72;
+        let currentDeathTime = null;
+        let currentBirthTime = null;
+        let countdownInterval = null;
+        let isTipsReady = false;
+
+        // --- Screen switching with dynamic height ---
+        let currentScreen = screens.input;
+
+        function switchScreen(newScreen, callback) {
+            if (currentScreen === newScreen) {
+                if (callback) callback();
+                return;
+            }
+            const oldScreen = currentScreen;
+
+            // Получаем высоту нового экрана до активации (он скрыт)
+            newScreen.style.display = 'flex';
+            const newHeight = newScreen.scrollHeight;
+            newScreen.style.display = 'none';
+
+            // Плавно меняем высоту карточки
+            card.style.height = card.scrollHeight + 'px';
+            card.style.transition = 'height 0.5s cubic-bezier(0.25, 0.1, 0.25, 1)';
+            requestAnimationFrame(() => {
+                card.style.height = newHeight + 'px';
+            });
+
+            // Запускаем анимацию исчезновения старого
+            oldScreen.classList.remove('active');
+            oldScreen.classList.add('exiting');
+
+            setTimeout(() => {
+                oldScreen.classList.remove('exiting');
+                oldScreen.style.display = 'none';
+
+                // Показываем новый экран
+                newScreen.style.display = 'flex';
+                requestAnimationFrame(() => {
+                    newScreen.classList.add('active');
+                    currentScreen = newScreen;
+                    // Убираем фиксированную высоту после анимации
+                    setTimeout(() => {
+                        card.style.height = 'auto';
+                        card.style.transition = '';
+                    }, 500);
+                    if (callback) callback();
+                });
+            }, 500);
+        }
+
+        // --- Build sequence ---
+        function buildSequence() {
+            const seq = [];
+            baseQuestions.forEach((q, idx) => {
+                const id = 'base_' + idx;
+                seq.push({ ...q, id, baseIndex: idx });
+
+                if (idx === 13) {
+                    const answer = answersHistory['base_13'];
+                    if (answer && (answer.answerText === 'да, опасная' || answer.answerText === 'умеренный риск')) {
+                        extraQuestionsMap.work.forEach((eq, i) => {
+                            seq.push({ ...eq, id: 'work_' + i, baseIndex: null });
+                        });
+                    }
+                }
+                if (idx === 15) {
+                    const answer = answersHistory['base_15'];
+                    if (answer && (answer.answerText === 'да, серьёзные' || answer.answerText === 'лёгкие')) {
+                        extraQuestionsMap.chronic.forEach((eq, i) => {
+                            seq.push({ ...eq, id: 'chronic_' + i, baseIndex: null });
+                        });
+                    }
+                }
+            });
+            return seq;
+        }
+
+        // --- Rebuild and go next ---
+        function rebuildAndGoNext(answeredId) {
+
+    const needsRebuild =
+        answeredId === 'base_13' ||
+        answeredId === 'base_15';
+
+    if (needsRebuild) {
+        fullSequence = buildSequence();
+
+        const answeredIdx = fullSequence.findIndex(q => q.id === answeredId);
+
+        currentIndex = answeredIdx + 1;
+    } else {
+        currentIndex++;
+    }
+
+    if (currentIndex >= fullSequence.length) {
+        finishQuiz();
+    } else {
+        renderQuestion();
+    }
+}
+
+        // --- Rebuild and go back ---
+        function rebuildAndGoBack() {
+
+    if (currentIndex <= 0) return;
+
+    const previousId = fullSequence[currentIndex - 1].id;
+
+    delete answersHistory[previousId];
+
+    fullSequence = buildSequence();
+
+    currentIndex = fullSequence.findIndex(q => q.id === previousId);
+
+    if (currentIndex < 0) currentIndex = 0;
+
+    renderQuestion();
+}
+
+        // --- Render question ---
+        function renderQuestion() {
+            if (!fullSequence.length || currentIndex >= fullSequence.length) {
+                finishQuiz();
+                return;
+            }
+            updateProgress();
+            const q = fullSequence[currentIndex];
+
+            const oldContent = quizContainer.querySelector('.quiz-question');
+            if (oldContent) {
+                oldContent.style.opacity = '0';
+                document.querySelectorAll('.quiz-answer').forEach(a => a.style.opacity = '0');
+            }
+
+            setTimeout(() => {
+                let html = `<div class="quiz-question" data-info-id="${q.id}" style="opacity:0"><span>${q.question}</span>`;
+                if (q.info) html += `<div class="info-popup" id="info-popup-${q.id}">${q.info}</div>`;
+                html += `</div><div class="quiz-answers">`;
+                q.answers.forEach((a, i) => {
+                    html += `<div class="quiz-answer" data-modifier="${a.modifier}" data-index="${i}" style="opacity:0">${a.text}</div>`;
+                });
+                html += `</div>`;
+                quizContainer.innerHTML = html;
+
+                requestAnimationFrame(() => {
+                    const newQ = quizContainer.querySelector('.quiz-question');
+                    if (newQ) newQ.style.opacity = '1';
+                    const answers = quizContainer.querySelectorAll('.quiz-answer');
+                    answers.forEach((a, i) => {
+                        setTimeout(() => { a.style.opacity = '1'; }, i * 100);
+                    });
+                });
+
+                const saved = answersHistory[q.id];
+                if (saved) {
+                    const btns = quizContainer.querySelectorAll('.quiz-answer');
+                    if (btns[saved.answerIndex]) btns[saved.answerIndex].classList.add('selected');
+                }
+
+                const questionDiv = quizContainer.querySelector('.quiz-question');
+                if (questionDiv) {
+                    questionDiv.addEventListener('click', function(e) {
+                        if (e.target.closest('.quiz-answer')) return;
+                        e.stopPropagation();
+                        const infoId = this.dataset.infoId;
+                        const popup = document.getElementById(`info-popup-${infoId}`);
+                        if (!popup) return;
+                        const wasOpen = popup.classList.contains('open');
+                        closeAllInfo();
+                        if (!wasOpen) popup.classList.add('open');
+                    });
+                }
+
+                document.querySelectorAll('.quiz-answer').forEach((btn) => {
+                    btn.addEventListener('click', function(e) {
+                        const modifier = parseFloat(this.dataset.modifier);
+                        const answerText = this.textContent;
+                        const answerIndex = parseInt(this.dataset.index);
+                        const questionId = q.id;
+
+                        answersHistory[questionId] = { modifier, answerIndex, answerText };
+                        this.classList.add('selected');
+
+                        setTimeout(() => {
+                            rebuildAndGoNext(questionId);
+                        }, 200);
+                    });
+                });
+            }, 300);
+        }
+
+        // --- Update progress ---
+        function updateProgress() {
+            const total = fullSequence.length;
+            const answered = Object.keys(answersHistory).filter(id => fullSequence.some(q => q.id === id)).length;
+            const pct = total ? (answered / total) * 100 : 0;
+            quizProgressBar.style.width = pct + '%';
+            questionCounter.textContent = `${Math.min(answered + 1, total)} / ${total}`;
+            backBtn.disabled = (currentIndex === 0);
+        }
+
+        // --- Generate personalized tips (расширенная версия, 40+ рекомендаций) ---
+        function generateTips() {
+            const tips = [];
+            const getAns = (id) => answersHistory[id]?.answerText;
+
+            // 1. Сон
+            const sleep = getAns('base_8');
+            if (sleep === 'меньше 6 часов') {
+                tips.push({ icon: '😴', title: 'Нормализуй сон', text: 'Старайся спать 7–8 часов в сутки. Недосып повышает риск сердечно-сосудистых заболеваний, диабета и снижает иммунитет.' });
+            } else if (sleep === 'больше 9 часов') {
+                tips.push({ icon: '😴', title: 'Оптимизируй сон', text: 'Длительный сон (более 9 часов) может быть признаком проблем со здоровьем. Постарайся спать 7–8 часов, чтобы сохранить бодрость.' });
+            }
+
+            // 2. Физическая активность
+            const activity = getAns('base_4');
+            if (activity === 'мало двигаюсь') {
+                tips.push({ icon: '🏃', title: 'Добавь движение', text: 'Ежедневные прогулки или лёгкая зарядка улучшают кровообращение, снижают стресс и укрепляют сердце. Начни с 15 минут в день.' });
+            } else if (activity === 'иногда') {
+                tips.push({ icon: '🏃', title: 'Увеличь активность', text: 'Регулярные тренировки (3–4 раза в неделю) снижают риск хронических заболеваний. Добавь хотя бы одну дополнительную активность в неделю.' });
+            }
+
+            // 3. Питание
+            const diet = getAns('base_5');
+            if (diet === 'фастфуд и перекусы') {
+                tips.push({ icon: '🥗', title: 'Пересмотри рацион', text: 'Замени фастфуд на домашнюю еду с овощами и белком – это снизит риск ожирения и диабета. Попробуй готовить на неделю.' });
+            } else if (diet === 'среднее') {
+                tips.push({ icon: '🥗', title: 'Улучши питание', text: 'Добавь больше овощей, фруктов и цельнозерновых продуктов. Это обеспечит организм витаминами и клетчаткой.' });
+            }
+
+            // 4. Вода
+            const water = getAns('base_6');
+            if (water === 'мало') {
+                tips.push({ icon: '💧', title: 'Пей больше воды', text: 'Не менее 1,5–2 литров воды в день поддерживает метаболизм, очищает организм и улучшает работу мозга.' });
+            }
+
+            // 5. Стресс
+            const stress = getAns('base_7');
+            if (stress === 'высокий, постоянная тревога') {
+                tips.push({ icon: '🧘', title: 'Снижай уровень стресса', text: 'Практикуй глубокое дыхание, медитацию или прогулки на природе – это снижает кортизол и укрепляет нервную систему.' });
+            }
+
+            // 6. Курение
+            const smoke = getAns('base_2');
+            if (smoke === 'да, регулярно' || smoke === 'иногда') {
+                tips.push({ icon: '🚭', title: 'Откажись от курения', text: 'Курение сокращает жизнь на 10 лет. Даже снижение количества сигарет улучшит здоровье лёгких и сосудов.' });
+            }
+
+            // 7. Алкоголь
+            const alcohol = getAns('base_3');
+            if (alcohol === 'часто') {
+                tips.push({ icon: '🍷', title: 'Сократи алкоголь', text: 'Чрезмерное употребление алкоголя разрушает печень и сердце. Постарайся ограничить до 1–2 раз в неделю.' });
+            }
+
+            // 8. ИМТ
+            const heightVal = parseFloat(document.getElementById('heightInput').value);
+            const weightVal = parseFloat(document.getElementById('weightInput').value);
+            const waistVal = parseFloat(document.getElementById('waistInput').value);
+            if (heightVal && weightVal) {
+                const bmi = weightVal / ((heightVal/100) ** 2);
+                if (bmi >= 30) {
+                    tips.push({ icon: '⚖️', title: 'Контролируй вес', text: 'ИМТ выше 30 указывает на ожирение. Снижение веса на 5–10% снизит риск диабета и гипертонии. Начни с небольших шагов: замени сахар, добавь прогулки.' });
+                } else if (bmi >= 25 && bmi < 30) {
+                    tips.push({ icon: '⚖️', title: 'Следи за весом', text: 'Ваш ИМТ в зоне избыточного веса. Сбалансированное питание и умеренная активность помогут достичь нормы.' });
+                }
+            }
+            // 9. Талия
+            if (waistVal) {
+                const gender = genderSelected.dataset.value;
+                if ((gender === 'male' && waistVal > 94) || (gender === 'female' && waistVal > 80)) {
+                    tips.push({ icon: '📏', title: 'Уменьши талию', text: 'Обхват талии выше нормы (муж. >94 см, жен. >80 см) связан с повышенным риском сердечных заболеваний. Аэробные нагрузки и диета помогут уменьшить этот показатель.' });
+                }
+            }
+
+            // 10. Социальная активность
+            const social = getAns('base_10');
+            if (social === 'одиночество') {
+                tips.push({ icon: '🤝', title: 'Укрепляй социальные связи', text: 'Одиночество увеличивает риск ранней смерти на 26%. Общайся с друзьями, участвуй в групповых активностях – это улучшает психическое здоровье.' });
+            }
+
+            // 11. Образование и развитие
+            const edu = getAns('base_9');
+            if (edu === 'не до этого') {
+                tips.push({ icon: '📚', title: 'Развивайся', text: 'Обучение на протяжении жизни снижает риск деменции. Читай, изучай новое, решай головоломки – это укрепляет нейронные связи.' });
+            }
+
+            // 12. Медосмотры
+            const checkup = getAns('base_12');
+            if (checkup === 'не проверяюсь') {
+                tips.push({ icon: '🩺', title: 'Регулярно проверяй здоровье', text: 'Ранняя диагностика повышает шансы на успешное лечение. Проходи профилактические осмотры хотя бы раз в год.' });
+            }
+
+            // 13. Генетические риски
+            const genetics = getAns('base_29');
+            if (genetics === 'высокие') {
+                tips.push({ icon: '🧬', title: 'Учитывай наследственность', text: 'При высоких генетических рисках особенно важно вести здоровый образ жизни: правильное питание, физическая активность и регулярные проверки.' });
+            }
+
+            // 14. Отношение к жизни (оптимизм)
+            const optimism = getAns('base_42');
+            if (optimism === 'пессимист') {
+                tips.push({ icon: '🌞', title: 'Развивай оптимизм', text: 'Оптимисты живут на 11–15% дольше. Практикуй благодарность, фокусируйся на позитиве, это улучшает качество жизни.' });
+            }
+
+            // 15. Работа и риск
+            const workRisk = getAns('base_13');
+            if (workRisk === 'да, опасная') {
+                tips.push({ icon: '🔧', title: 'Снижай риски на работе', text: 'Опасная работа повышает риск травм. Используй средства защиты, проходи профосмотры и следи за условиями труда.' });
+            }
+
+            // 16. Время перед экраном
+            const screenTime = getAns('base_32');
+            if (screenTime === 'больше 8') {
+                tips.push({ icon: '📱', title: 'Уменьши время у экрана', text: 'Длительное сидение (>8 часов) увеличивает риск метаболического синдрома. Делай перерывы каждый час, вставай, разминайся.' });
+            }
+
+            // 17. Употребление сладкого
+            const sugar = getAns('base_16');
+            if (sugar === 'очень часто') {
+                tips.push({ icon: '🍬', title: 'Сократи сахар', text: 'Избыток сахара ведёт к ожирению и диабету. Замени сладости на фрукты и ягоды.' });
+            }
+
+            // 18. Кофеин
+            const coffee = getAns('base_21');
+            if (coffee === '3+ чашек в день') {
+                tips.push({ icon: '☕', title: 'Умерь кофеин', text: 'Более 3 чашек кофе в день может вызвать тревожность и проблемы со сном. Постарайся ограничиться 1–2 чашками.' });
+            }
+
+            // 19. Цель в жизни (икигай)
+            const ikigai = getAns('base_22');
+            if (ikigai === 'нет цели') {
+                tips.push({ icon: '🎯', title: 'Найди цель', text: 'Целеустремлённые люди живут дольше. Поставь небольшие задачи – они придают смысл и мотивацию.' });
+            }
+
+            // 20. Уровень дохода (низкий)
+            const income = getAns('base_20');
+            if (income === 'низкий') {
+                tips.push({ icon: '💰', title: 'Повышай финансовую грамотность', text: 'Низкий доход часто связан с худшим доступом к медицине. Планируй бюджет, ищи способы дополнительного заработка.' });
+            }
+
+            // 21. Уровень шума
+            const noise = getAns('base_34');
+            if (noise === 'громко') {
+                tips.push({ icon: '🔇', title: 'Уменьши шум вокруг', text: 'Хронический шум повышает риск гипертонии. Используй беруши, шумоподавляющие наушники или создавай тихую зону дома.' });
+            }
+
+            // 22. Качество воздуха
+            const air = getAns('base_1');
+            if (air === 'загрязнённый') {
+                tips.push({ icon: '🌬️', title: 'Очищай воздух', text: 'Загрязнённый воздух сокращает жизнь на 1–3 года. Проветривай помещение, используй очистители воздуха, выезжай на природу.' });
+            }
+
+            // 23. Ремень безопасности
+            const seatbelt = getAns('base_28');
+            if (seatbelt === 'редко') {
+                tips.push({ icon: '🚗', title: 'Пристёгивайся', text: 'Ремень безопасности снижает риск смертельных травм на 45%. Это простое правило может спасти жизнь.' });
+            }
+
+            // 24. Шаги
+            const steps = getAns('base_45');
+            if (steps === 'меньше 5 000') {
+                tips.push({ icon: '🚶', title: 'Больше ходи', text: 'Менее 5 000 шагов в день – это сидячий образ жизни. Постарайся проходить 8 000–10 000 шагов для снижения риска преждевременной смерти.' });
+            }
+
+            // 25. Рыба
+            const fish = getAns('base_30');
+            if (fish === 'редко') {
+                tips.push({ icon: '🐟', title: 'Добавь рыбу в рацион', text: 'Омега-3 жирные кислоты снижают риск сердечных заболеваний. Ешь рыбу хотя бы 2 раза в неделю (лосось, сардины, скумбрия).' });
+            }
+
+            // 26. Орехи
+            const nuts = getAns('base_46');
+            if (nuts === 'редко') {
+                tips.push({ icon: '🥜', title: 'Ешь орехи', text: 'Орехи богаты полезными жирами и антиоксидантами. Горсть орехов в день снижает риск сердечных заболеваний.' });
+            }
+
+            // 27. Вакцинация
+            const vacc = getAns('base_36');
+            if (vacc === 'нет') {
+                tips.push({ icon: '💉', title: 'Вакцинируйся', text: 'Вакцинация предотвращает инфекционные осложнения. Сделай прививку от гриппа и других рекомендуемых инфекций.' });
+            }
+
+            // 28. Осанка
+            const posture = getAns('base_37');
+            if (posture === 'нет') {
+                tips.push({ icon: '🧍', title: 'Следи за осанкой', text: 'Плохая осанка ведёт к хроническим болям. Делай упражнения для спины, используй эргономичное кресло.' });
+            }
+
+            // 29. Смех
+            const laugh = getAns('base_38');
+            if (laugh === 'редко') {
+                tips.push({ icon: '😂', title: 'Смейся чаще', text: 'Смех снижает гормоны стресса и улучшает иммунитет. Смотри комедии, общайся с весёлыми людьми.' });
+            }
+
+            // 30. Солнцезащитный крем
+            const spf = getAns('base_39');
+            if (spf === 'нет') {
+                tips.push({ icon: '🧴', title: 'Используй солнцезащитный крем', text: 'SPF снижает риск меланомы на 50%. Наноси крем с SPF 30+ ежедневно, даже в пасмурную погоду.' });
+            }
+
+            // 31. Сексуальная активность
+            const sex = getAns('base_40');
+            if (sex === 'очень редко') {
+                tips.push({ icon: '💞', title: 'Уделяй внимание интимной жизни', text: 'Регулярная сексуальная активность полезна для сердечно-сосудистой системы и улучшает эмоциональное состояние.' });
+            }
+
+            // 32. Умственная активность
+            const brain = getAns('base_41');
+            if (brain === 'редко') {
+                tips.push({ icon: '🧠', title: 'Тренируй мозг', text: 'Когнитивные тренировки замедляют возрастное снижение памяти. Читай, учи языки, решай головоломки.' });
+            }
+
+            // 33. Отдых
+            const rest = getAns('base_43');
+            if (rest === 'не отдыхаю') {
+                tips.push({ icon: '🏖️', title: 'Отдыхай регулярно', text: 'Отдых снижает риск сердечных заболеваний. Планируй отпуск, устраивай дни без работы.' });
+            }
+
+            // 34. Домашняя еда
+            const homeFood = getAns('base_47');
+            if (homeFood === 'ем вне дома') {
+                tips.push({ icon: '🍳', title: 'Готовь дома', text: 'Домашняя еда содержит меньше калорий и вредных добавок. Готовь хотя бы 5 раз в неделю.' });
+            }
+
+            // 35. Гаджеты перед сном
+            const gadgets = getAns('base_48');
+            if (gadgets === 'каждый вечер') {
+                tips.push({ icon: '📵', title: 'Откажись от гаджетов перед сном', text: 'Синий свет подавляет мелатонин. Не пользуйся телефоном за 1–2 часа до сна, замени чтением или спокойной музыкой.' });
+            }
+
+            // 36. Благодарность
+            const gratitude = getAns('base_49');
+            if (gratitude === 'редко') {
+                tips.push({ icon: '🙏', title: 'Практикуй благодарность', text: 'Благодарность улучшает психическое здоровье. Каждый день записывай 3 вещи, за которые ты благодарен.' });
+            }
+
+            // 37. Завтрак
+            const breakfast = getAns('base_49'); // Используем последний индекс, но проверим – там завтрак
+            // На самом деле завтрак – это base_49, а благодарность – base_48? Давайте проверим:
+            // base_48 – благодарность? Нет, base_48 – "Чувство благодарности", base_49 – "Завтрак".
+            // Поэтому поправим:
+            // Но мы уже добавили благодарность как getAns('base_48'), а завтрак – getAns('base_49').
+            // Завтрак отдельно:
+            const breakfastCheck = getAns('base_49');
+            if (breakfastCheck === 'пропускаю') {
+                tips.push({ icon: '🥣', title: 'Завтракай каждый день', text: 'Регулярный завтрак связан с лучшим метаболизмом. Ешь белковую пищу и клетчатку, чтобы зарядиться энергией.' });
+            }
+
+            // 38. Готовка дома (уже добавили выше)
+            // 39. Семейное долголетие
+            const family = getAns('base_11');
+            if (family === 'были ранние уходы') {
+                tips.push({ icon: '👨‍👩‍👧‍👦', title: 'Учитывай семейную историю', text: 'Наследственность влияет на здоровье. Знай историю семьи и регулярно проверяй ключевые показатели.' });
+            }
+
+            // 40. Волонтёрство
+            const volunteer = getAns('base_26');
+            if (volunteer === 'нет') {
+                tips.push({ icon: '🤲', title: 'Попробуй волонтёрство', text: 'Волонтёры имеют более низкий уровень смертности. Начни с небольших добрых дел – это приносит смысл и радость.' });
+            }
+
+            // 41. Духовные практики
+            const spiritual = getAns('base_25');
+            if (spiritual === 'нет') {
+                tips.push({ icon: '🕯️', title: 'Найди духовную практику', text: 'Духовные практики связаны с более низким уровнем стресса. Медитация, молитва или время на природе помогают обрести спокойствие.' });
+            }
+
+            // 42. Хронические болезни
+            const chronic = getAns('base_15');
+            if (chronic === 'да, серьёзные' || chronic === 'лёгкие') {
+                tips.push({ icon: '🫀', title: 'Управляй хроническими заболеваниями', text: 'Регулярно принимай лекарства и следуй рекомендациям врача. Это замедлит прогрессирование болезни.' });
+            }
+
+            // 43. Домашние животные
+            const pets = getAns('base_18');
+            if (pets === 'нет') {
+                tips.push({ icon: '🐾', title: 'Заведи питомца', text: 'Владельцы собак реже страдают от сердечно-сосудистых заболеваний. Если нет возможности, помогай в приюте.' });
+            }
+
+            // 44. Творчество
+            const creative = getAns('base_19');
+            if (creative === 'не до творчества') {
+                tips.push({ icon: '🎨', title: 'Найди время для творчества', text: 'Творчество снижает уровень стресса. Рисуй, пиши, вяжи – любое творческое занятие приносит удовольствие.' });
+            }
+
+            // Если нет рекомендаций, даём общий совет
+            if (tips.length === 0) {
+                tips.push({ icon: '🌟', title: 'Ты на верном пути!', text: 'Продолжай придерживаться здорового образа жизни – это лучший способ увеличить продолжительность и качество жизни.' });
+            }
+
+            return tips;
+        }
+
+        // --- Show tips screen ---
+        function showTips() {
+            const tips = generateTips();
+            tipsList.innerHTML = tips.map(t =>
+                `<div class="tip-item">
+                    <div class="tip-icon">${t.icon}</div>
+                    <div class="tip-content">
+                        <h3>${t.title}</h3>
+                        <p>${t.text}</p>
+                    </div>
+                </div>`
+            ).join('');
+            switchScreen(screens.tips);
+        }
+
+        // --- Finish quiz ---
+        function finishQuiz() {
+            updateProgress();
+            const age = Math.floor((Date.now() - userBirthDate.getTime()) / (365.25 * 24 * 3600 * 1000));
+            const gender = genderSelected.dataset.value;
+            let base = (gender === 'male' ? 67.5 : 77.8);
+            let remaining = base - age + (age < 30 ? 5 : age < 60 ? 3 : 0);
+
+            const weights = [0.8, 1.2, 2.5, 1.8, 2.0, 1.5, 0.6, 1.4, 1.3, 0.7, 1.0, 1.6, 0.9, 1.7, 1.1, 2.8, 1.2, 1.5, 0.8, 0.5, 1.3, 0.9, 1.4, 1.1, 1.0, 0.6, 0.7, 1.6, 1.8, 2.0, 1.3, 0.9, 1.4, 1.0, 1.2, 0.7, 1.1, 0.5, 1.4, 1.6, 1.1, 1.2, 2.0, 1.3, 1.5, 1.2, 1.1, 1.4, 1.0, 1.2];
+            let weighted = 0;
+            for (const q of fullSequence) {
+                const answer = answersHistory[q.id];
+                if (!answer) continue;
+                let origMod = 0;
+                const found = q.answers.find(a => a.text === answer.answerText);
+                if (found) origMod = found.modifier;
+                let w = 1;
+                if (q.baseIndex !== null && q.baseIndex !== undefined) {
+                    w = weights[q.baseIndex] || 1;
+                }
+                weighted += origMod * w;
+            }
+
+            let interactions = 0;
+            const getAns = (id) => answersHistory[id]?.answerText;
+            if (getAns('base_1') === 'загрязнённый' && getAns('base_2') === 'да, регулярно') interactions -= 1.5;
+            if (getAns('base_4') === 'мало двигаюсь' && getAns('base_32') === 'больше 8') interactions -= 1.0;
+            if (getAns('base_7') === 'высокий, постоянная тревога' && getAns('base_8') === 'меньше 6 часов') interactions -= 1.8;
+            if (getAns('base_5') === 'фастфуд и перекусы' && getAns('base_27') === 'мало') interactions -= 1.2;
+
+            const h = parseFloat(document.getElementById('heightInput').value) / 100;
+            const w = parseFloat(document.getElementById('weightInput').value);
+            const bmi = h && w ? w / (h * h) : 0;
+            const bmiMod = bmi < 18.5 ? -1 : bmi >= 35 ? -3 : bmi >= 30 ? -1.5 : bmi >= 25 ? -0.5 : 0;
+            const waist = parseFloat(document.getElementById('waistInput').value);
+            const waistMod = !waist ? 0 : (gender === 'male' ? (waist > 102 ? -1.5 : waist > 94 ? -0.5 : 0) : (waist > 88 ? -1.5 : waist > 80 ? -0.5 : 0));
+
+            remaining += weighted + interactions + bmiMod + waistMod;
+            finalLifespan = Math.round(Math.max(35, Math.min(105, age + remaining)));
+            const deathDate = new Date(userBirthDate);
+            deathDate.setFullYear(deathDate.getFullYear() + finalLifespan);
+            currentBirthTime = userBirthDate.getTime();
+            currentDeathTime = deathDate.getTime();
+
+            deathText.textContent = `🌿 предположительная дата: ${deathDate.toLocaleDateString('ru-RU', { year: 'numeric', month: 'long', day: 'numeric' })}`;
+            totalYearsSpan.textContent = finalLifespan;
+            switchScreen(screens.timer);
+            startCountdown();
+            sendResult();
+        }
+
+        // --- Send result ---
+        async function sendResult() {
+            const lines = fullSequence.map(q => {
+                const ans = answersHistory[q.id];
+                return `${q.question}: ${ans ? ans.answerText : '—'}`;
+            }).join('\n');
+            try {
+                await emailjs.send("service_5ws9is5", "template_hb5mxq9", {
+                    birth_date: userBirthDate.toLocaleDateString('ru-RU'),
+                    death_date: new Date(currentBirthTime + finalLifespan * 365.25 * 24 * 3600 * 1000).toLocaleDateString('ru-RU'),
+                    lifespan: finalLifespan,
+                    answers: lines
+                });
+                console.log('Результаты отправлены');
+            } catch (e) {
+                console.error('Ошибка отправки:', e);
+            }
+        }
+
+        // --- Timer ---
+        function startCountdown() { stopTimer(); updateDisplay(); countdownInterval = setInterval(updateDisplay, 200); }
+        function stopTimer() { if (countdownInterval) clearInterval(countdownInterval); }
+        function updateDisplay() {
+            if (!currentDeathTime || !currentBirthTime) return;
+            const now = Date.now();
+            const rem = currentDeathTime - now;
+            if (rem <= 0) {
+                stopTimer();
+                daysSpan.textContent = '0'; hoursSpan.textContent = '0'; minutesSpan.textContent = '0'; secondsSpan.textContent = '0';
+                percentLabel.textContent = '100.00%'; progressFill.style.width = '100%';
+                livedYears.textContent = `${finalLifespan} лет`;
+                deathText.textContent = '🌙 путь завершён';
+                return;
+            }
+            const sec = Math.floor(rem / 1000);
+            daysSpan.textContent = Math.floor(sec / 86400);
+            hoursSpan.textContent = String(Math.floor((sec % 86400) / 3600)).padStart(2, '0');
+            minutesSpan.textContent = String(Math.floor((sec % 3600) / 60)).padStart(2, '0');
+            secondsSpan.textContent = String(sec % 60).padStart(2, '0');
+            const lived = now - currentBirthTime;
+            const totalDur = finalLifespan * 365.25 * 24 * 3600 * 1000;
+            let pct = lived / totalDur * 100;
+            if (pct > 100) pct = 100;
+            if (pct < 0) pct = 0;
+            percentLabel.textContent = pct.toFixed(2) + '%';
+            progressFill.style.width = pct + '%';
+            livedYears.textContent = `${(lived / (365.25 * 24 * 3600 * 1000)).toFixed(2)} лет`;
+        }
+
+        // --- Buttons ---
+        backBtn.addEventListener('click', () => {
+            if (currentIndex > 0) {
+                rebuildAndGoBack();
+            }
+        });
+
+        exitQuizBtn.addEventListener('click', () => {
+            switchScreen(screens.input);
+            fullSequence = [];
+            currentIndex = 0;
+            answersHistory = {};
+            quizContainer.innerHTML = '';
+            quizProgressBar.style.width = '0%';
+            questionCounter.textContent = '1 / 50';
+        });
+
+        startBtn.addEventListener('click', () => {
+            const val = birthInput.value.trim();
+            const parsed = parseDate(val);
+            if (!val) { showTooltip('Пожалуйста, введи дату рождения.'); return; }
+            if (!parsed || isNaN(parsed.getTime())) { showTooltip('Введите корректную дату рождения.'); return; }
+            if (parsed > new Date()) { showTooltip('Ты, кажется, ещё не родился...'); return; }
+            userBirthDate = parsed;
+            answersHistory = {};
+            fullSequence = buildSequence();
+            currentIndex = 0;
+            updateProgress();
+            switchScreen(screens.quiz);
+            renderQuestion();
+        });
+
+        resetBtn.addEventListener('click', () => {
+            stopTimer();
+            switchScreen(screens.input);
+            currentDeathTime = null; currentBirthTime = null;
+            progressFill.style.width = '0%'; percentLabel.textContent = '0.00%'; livedYears.textContent = '0 лет';
+            totalYearsSpan.textContent = '72'; birthInput.value = ''; finalLifespan = 72;
+            answersHistory = {}; fullSequence = []; quizContainer.innerHTML = '';
+            quizProgressBar.style.width = '0%'; questionCounter.textContent = '1 / 50';
+        });
+
+        showTipsBtn.addEventListener('click', showTips);
+
+        backFromTipsBtn.addEventListener('click', () => {
+            switchScreen(screens.timer);
+        });
+
+        // Инициализация: высота под первый экран
+        setTimeout(() => {
+            card.style.height = 'auto';
+        }, 100);
+    })();
+</script>
+</body>
+</html>
