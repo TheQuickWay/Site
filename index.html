@@ -788,15 +788,9 @@
 
     if (currentIndex <= 0) return;
 
-    const previousId = fullSequence[currentIndex - 1].id;
+    delete answersHistory[fullSequence[currentIndex].id];
 
-    delete answersHistory[previousId];
-
-    fullSequence = buildSequence();
-
-    currentIndex = fullSequence.findIndex(q => q.id === previousId);
-
-    if (currentIndex < 0) currentIndex = 0;
+    currentIndex--;
 
     renderQuestion();
 }
@@ -885,6 +879,44 @@
 
         // --- Generate personalized tips (расширенная версия, 40+ рекомендаций) ---
         function generateTips() {
+
+function calculateImpact() {
+
+    const positive = [];
+    const negative = [];
+
+    fullSequence.forEach(question => {
+
+        const answer = answersHistory[question.id];
+
+        if (!answer) return;
+
+        const option = question.answers.find(a => a.text === answer.answerText);
+
+        if (!option) return;
+
+        const item = {
+            title: question.question,
+            score: option.modifier
+        };
+
+        if (option.modifier > 0)
+            positive.push(item);
+
+        if (option.modifier < 0)
+            negative.push(item);
+
+    });
+
+    positive.sort((a,b)=>b.score-a.score);
+    negative.sort((a,b)=>a.score-b.score);
+
+    return {
+        positive: positive.slice(0,5),
+        negative: negative.slice(0,5)
+    };
+
+}
             const tips = [];
             const getAns = (id) => answersHistory[id]?.answerText;
 
@@ -1177,18 +1209,72 @@
 
         // --- Show tips screen ---
         function showTips() {
-            const tips = generateTips();
-            tipsList.innerHTML = tips.map(t =>
-                `<div class="tip-item">
-                    <div class="tip-icon">${t.icon}</div>
-                    <div class="tip-content">
-                        <h3>${t.title}</h3>
-                        <p>${t.text}</p>
-                    </div>
-                </div>`
-            ).join('');
-            switchScreen(screens.tips);
-        }
+
+    const tips = generateTips();
+
+    const positives = [];
+    const negatives = [];
+
+    const addPositive = text => positives.push(text);
+    const addNegative = text => negatives.push(text);
+
+    const getAns = id => answersHistory[id]?.answerText;
+
+    // Курение
+    if (getAns('base_9') === 'не курю')
+        addPositive('Не курите');
+    else
+        addNegative('Курение');
+
+    // Сон
+    if (getAns('base_8') === '7–8 часов')
+        addPositive('Полноценный сон');
+    else if (getAns('base_8') === 'меньше 6 часов')
+        addNegative('Недостаток сна');
+
+    // Спорт
+    if (getAns('base_4') === 'регулярно')
+        addPositive('Регулярная физическая активность');
+    else if (getAns('base_4') === 'мало двигаюсь')
+        addNegative('Малоподвижный образ жизни');
+
+    // Стресс
+    if (getAns('base_7') === 'низкий')
+        addPositive('Низкий уровень стресса');
+    else if (getAns('base_7') === 'высокий, постоянная тревога')
+        addNegative('Высокий уровень стресса');
+
+    // Питание
+    if (getAns('base_5') === 'здоровое')
+        addPositive('Сбалансированное питание');
+    else if (getAns('base_5') === 'фастфуд и перекусы')
+        addNegative('Нездоровое питание');
+
+let html = '';
+
+    html += tips.map(t=>`
+
+        <div class="tip-item">
+
+            <div class="tip-icon">${t.icon}</div>
+
+            <div class="tip-content">
+
+                <h3>${t.title}</h3>
+
+                <p>${t.text}</p>
+
+            </div>
+
+        </div>
+
+    `).join('');
+
+    tipsList.innerHTML = html;
+
+    switchScreen(screens.tips);
+
+}
 
         // --- Finish quiz ---
         function finishQuiz() {
