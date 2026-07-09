@@ -10,7 +10,6 @@
     <link href="https://fonts.googleapis.com/css2?family=Nunito:ital,wght@0,300;0,400;0,500;0,600;1,300&display=swap" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
     <style>
-        /* все стили без изменений, как в предыдущем большом ответе */
         ::selection { background-color: #F6B492; color: #ffffff; }
         ::-moz-selection { background-color: #F6B492; color: #ffffff; }
         * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -34,7 +33,7 @@
             backdrop-filter: blur(12px);
             border: 1px solid rgba(255, 245, 235, 0.9);
             border-radius: 36px;
-            padding: 0.7rem 1.8rem;
+            padding: 0.5rem 1.5rem;
             box-shadow: 0 10px 28px rgba(210, 180, 160, 0.2);
             margin-bottom: 1rem;
             display: flex; align-items: center; gap: 0.5rem;
@@ -51,10 +50,14 @@
             background: rgba(255, 255, 250, 0.85);
             backdrop-filter: blur(18px); -webkit-backdrop-filter: blur(18px);
             border-radius: 48px;
-            padding: 2.2rem 2rem;
+            padding: 1.5rem 1.5rem;
             box-shadow: 0 25px 55px rgba(210,180,160,0.25), 0 8px 20px rgba(190,150,130,0.15), inset 0 1px 0 rgba(255,255,255,0.7);
             border: 1px solid rgba(255,245,235,0.9);
             position: relative; z-index: 2;
+            height: auto;
+            min-height: 400px;
+            max-height: 90vh;
+            transition: height 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94);
             overflow: hidden;
         }
         .card:hover {
@@ -72,35 +75,43 @@
 
         .screen {
             position: absolute;
-            top: 2.2rem; left: 2rem; right: 2rem; bottom: 2.2rem;
-            display: flex; flex-direction: column; gap: 1rem;
+            top: 1.5rem; left: 1.5rem; right: 1.5rem; bottom: 1.5rem;
+            display: flex; flex-direction: column; align-items: center; gap: 0.9rem;
             opacity: 0; visibility: hidden;
-            transition: opacity 0.5s ease, visibility 0s 0.5s;
+            transition: opacity 0.6s ease, visibility 0s 0.6s;
             pointer-events: none;
             overflow-y: auto;
             scrollbar-width: none;
             -ms-overflow-style: none;
+            padding-bottom: 0.5rem;
         }
         .screen::-webkit-scrollbar { display: none; }
         .screen.active {
             opacity: 1; visibility: visible; pointer-events: auto;
-            transition: opacity 0.5s ease 0.1s, visibility 0s 0s;
+            transition: opacity 0.6s ease 0.1s, visibility 0s 0s;
         }
 
         h1 {
-            font-weight: 500; font-size: 1.9rem; letter-spacing: 0.5px; color: #c0856b; text-align: center;
+            font-weight: 500; font-size: 1.8rem; letter-spacing: 0.5px; color: #c0856b; text-align: center;
             word-break: break-word; line-height: 1.2; font-style: italic;
             text-shadow: 0 1px 2px rgba(255,245,240,0.8);
             display: flex; align-items: center; justify-content: center; gap: 0.2rem;
-            margin-bottom: -0.3rem;
+            margin-bottom: -0.2rem;
         }
         .logo { display: inline-block; font-size: 2rem; margin-right: 0.3rem; animation: logoBounce 3s ease-in-out infinite; }
         @keyframes logoBounce { 0%,100%{transform:translateY(0)} 30%{transform:translateY(-6px)} 50%{transform:translateY(0)} 70%{transform:translateY(-3px)} }
 
         .subtitle {
             color: #b29686; text-align: center; font-size: 0.9rem; font-weight: 400; letter-spacing: 0.8px;
-            border-bottom: 1px dashed #ead3c4; padding-bottom: 0.4rem; font-style: italic;
-            margin-bottom: -0.2rem;
+            font-style: italic;
+            background: rgba(255, 250, 245, 0.95);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 245, 235, 0.9);
+            border-radius: 36px;
+            padding: 0.4rem 2rem;
+            box-shadow: 0 4px 12px rgba(210, 180, 160, 0.15);
+            position: sticky; top: 0; z-index: 10; margin-bottom: 1rem;
+            align-self: center; width: fit-content; max-width: 95%;
         }
 
         .input-group { display: flex; flex-direction: column; align-items: center; gap: 0.7rem; width: 100%; }
@@ -149,13 +160,17 @@
 
         .btn {
             background: #f9efe6; border: 1px solid #e7cdb8; color: #ad7a62; font-family: 'Nunito', sans-serif;
-            font-weight: 600; font-size: 1rem; padding: 0.7rem 2rem; letter-spacing: 1.5px; border-radius: 50px;
+            font-weight: 600; font-size: 0.95rem; padding: 0.65rem 1.8rem; letter-spacing: 1.5px; border-radius: 50px;
             cursor: pointer; background: linear-gradient(135deg, #fff7f0, #fbe9dd);
             box-shadow: 0 4px 14px rgba(200,150,120,0.12); transition: all 0.3s ease; text-transform: lowercase;
             backdrop-filter: blur(4px); animation: gentlePulse 3s infinite;
+            align-self: center; max-width: 100%; width: fit-content; flex-shrink: 0;
         }
         @keyframes gentlePulse { 0%,100% { box-shadow: 0 4px 14px rgba(200,150,120,0.12); } 50% { box-shadow: 0 6px 20px rgba(200,150,120,0.2); } }
-        .btn:hover { background: #fff3e8; border-color: #d9b196; color: #8b5e4a; box-shadow: 0 10px 24px rgba(200,140,110,0.25); transform: translateY(-2px) scale(1.02); }
+        .btn:hover { 
+            background: #fff3e8; border-color: #d9b196; color: #8b5e4a; 
+            box-shadow: 0 10px 24px rgba(200,140,110,0.25); transform: translateY(-2px); 
+        }
 
         .error-tooltip {
             position: absolute; bottom: calc(100% + 6px); left: 50%;
@@ -169,7 +184,7 @@
         .error-tooltip.show { opacity: 1; pointer-events: auto; transform: translateX(-50%) translateY(0); }
 
         .soft-footer { color: #d6bfac; text-align: center; font-size: 0.7rem; margin-top: 0.4rem; font-style: italic; }
-        .quiz-header { display: flex; align-items: center; gap: 0.8rem; margin-bottom: 0.2rem; }
+        .quiz-header { display: flex; align-items: center; gap: 0.8rem; margin-bottom: 0.2rem; width: 100%; }
         .back-btn, .exit-btn {
             background: none; border: 1px solid #e7cdb8; color: #ad7a62; font-size: 1.2rem;
             width: 36px; height: 36px; border-radius: 50%; display: flex; align-items: center; justify-content: center;
@@ -182,18 +197,18 @@
         .progress-bar-fill { height: 100%; width: 0%; background: linear-gradient(90deg, #fcd5c0, #e89b7b); border-radius: 10px; transition: width 0.4s ease; }
         .question-counter { font-size: 0.85rem; color: #c7a693; font-weight: 500; margin-bottom: -0.3rem; text-align: center; }
 
-        .quiz-container { display: flex; flex-direction: column; gap: 1rem; align-items: center; width: 100%; }
+        .quiz-container { display: flex; flex-direction: column; gap: 0.9rem; align-items: center; width: 100%; }
         .quiz-question {
-            font-size: 1.1rem; color: #b1876f; font-weight: 500; text-align: center;
+            font-size: 1rem; color: #b1876f; font-weight: 500; text-align: center;
             padding: 0.6rem; background: #fff9f5; border-radius: 22px;
             border: 1px solid #f0ddd0; box-shadow: 0 3px 10px rgba(200,160,140,0.08);
             width: 100%; max-width: 340px; position: relative; display: flex; align-items: center; justify-content: center; gap: 6px;
             cursor: pointer; transition: opacity 0.3s ease;
         }
-        .quiz-answers { display: flex; flex-direction: column; gap: 0.6rem; width: 100%; max-width: 340px; }
+        .quiz-answers { display: flex; flex-direction: column; gap: 0.5rem; width: 100%; max-width: 340px; }
         .quiz-answer {
             background: #fef9f3; border: 1px solid #ead3c1; color: #7f6253;
-            padding: 0.6rem 1.2rem; border-radius: 36px; font-size: 0.9rem; font-weight: 500;
+            padding: 0.55rem 1.1rem; border-radius: 36px; font-size: 0.9rem; font-weight: 500;
             cursor: pointer; transition: all 0.25s ease; text-align: center;
         }
         .quiz-answer:hover { background: #fff3e8; border-color: #d9b196; transform: translateY(-2px); }
@@ -220,23 +235,23 @@
         .info-popup.open { transform: translateX(-50%) scale(1); opacity: 1; pointer-events: auto; }
 
         .death-date-box {
-            background: #fef9f3; border-radius: 26px; padding: 0.7rem 1rem; text-align: center; color: #b1876f;
+            background: #fef9f3; border-radius: 26px; padding: 0.6rem 1rem; text-align: center; color: #b1876f;
             font-weight: 500; letter-spacing: 0.6px; font-size: 1rem; border: 1px solid #f0ddd0;
             box-shadow: inset 0 1px 6px rgba(255,250,245,0.8); word-break: break-word; background: #fffbf6;
         }
         .timer-container {
-            display: flex; flex-wrap: wrap; align-items: center; justify-content: center; gap: 0.6rem;
-            background: #fefaf5; border-radius: 36px; padding: 1rem 0.8rem; border: 1px solid #f2ddd0;
+            display: flex; flex-wrap: wrap; align-items: center; justify-content: center; gap: 0.5rem;
+            background: #fefaf5; border-radius: 36px; padding: 0.9rem 0.7rem; border: 1px solid #f2ddd0;
             box-shadow: 0 6px 20px rgba(205,170,140,0.15); margin: 0.3rem 0;
         }
-        .time-block { display: flex; flex-direction: column; align-items: center; min-width: 56px; }
-        .time-digit { font-size: 2rem; font-weight: 600; color: #c89477; line-height: 1.1; letter-spacing: 0.4px; text-shadow: 0 1px 3px rgba(255,235,215,0.8); }
+        .time-block { display: flex; flex-direction: column; align-items: center; min-width: 52px; }
+        .time-digit { font-size: 1.9rem; font-weight: 600; color: #c89477; line-height: 1.1; letter-spacing: 0.4px; text-shadow: 0 1px 3px rgba(255,235,215,0.8); }
         .time-caption { font-size: 0.7rem; font-weight: 500; color: #c7a693; letter-spacing: 1px; text-transform: lowercase; }
         .separator { color: #d9b9a3; font-size: 1.8rem; font-weight: 400; margin-top: -0.2rem; animation: separatorBlink 2s infinite; }
         @keyframes separatorBlink { 0%,100% { opacity: 0.7; } 50% { opacity: 0.3; } }
-        .progress-section { margin-top: 0.1rem; }
+        .progress-section { margin-top: 0.1rem; width: 100%; }
         .percent-header { display: flex; justify-content: space-between; color: #b6947c; font-size: 0.85rem; font-weight: 500; letter-spacing: 0.5px; margin-bottom: 0.2rem; padding: 0 4px; }
-        .progress-track { background: #f3e7dd; height: 16px; border-radius: 30px; border: 1px solid #ead3c1; overflow: hidden; box-shadow: inset 0 2px 6px rgba(200,160,130,0.15); background: #faf1e6; }
+        .progress-track { background: #f3e7dd; height: 14px; border-radius: 30px; border: 1px solid #ead3c1; overflow: hidden; box-shadow: inset 0 2px 6px rgba(200,160,130,0.15); background: #faf1e6; }
         .progress-fill {
             width: 0%; height: 100%; background: linear-gradient(90deg, #fcd5c0, #f7b694, #e89b7b);
             box-shadow: 0 0 10px #ffcdb2, 0 0 4px #ffb88c; border-radius: 30px;
@@ -248,14 +263,56 @@
         }
         @keyframes glowPoint { 0%,100% { box-shadow: 0 0 8px #fde2d4; } 50% { box-shadow: 0 0 16px #ffb08c; } }
         .stats-row { display: flex; justify-content: space-between; color: #b69484; margin-top: 0.4rem; font-size: 0.85rem; font-weight: 500; padding: 0 2px; }
-        .reset-text { text-align: center; margin-top: 0.9rem; color: #c6a48d; cursor: pointer; font-size: 0.85rem; font-weight: 500; text-decoration: underline; text-underline-offset: 4px; text-decoration-color: #e0c4b0; transition: 0.2s; letter-spacing: 0.6px; }
+        .reset-text { text-align: center; margin-top: 0.8rem; color: #c6a48d; cursor: pointer; font-size: 0.85rem; font-weight: 500; text-decoration: underline; text-underline-offset: 4px; text-decoration-color: #e0c4b0; transition: 0.2s; letter-spacing: 0.6px; }
         .reset-text:hover { color: #a17863; text-decoration-color: #bc8b72; transform: scale(1.02); }
 
+        .advice-container {
+            display: flex; flex-direction: column; gap: 1.2rem; width: 100%;
+            font-size: 0.92rem; color: #4a3e38; line-height: 1.6;
+        }
+        .advice-item {
+            background: #fef9f3; border-radius: 18px; padding: 0.8rem 1rem;
+            border-left: 4px solid #d9b196;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.02);
+            transition: transform 0.2s ease;
+        }
+        .advice-item:hover {
+            transform: translateX(4px);
+        }
+        .advice-item .icon-wrapper {
+            display: inline-block;
+            font-size: 1.3rem;
+            margin-right: 0.5rem;
+            vertical-align: middle;
+        }
+        .advice-item strong {
+            color: #ad7a62;
+            font-weight: 600;
+            display: inline;
+            vertical-align: middle;
+        }
+        .advice-item .sci-mechanism {
+            color: #7a5e4f;
+            display: block;
+            margin-bottom: 0.3rem;
+            margin-top: 0.3rem;
+        }
+        .advice-item .practical-rec {
+            color: #b1876f;
+            font-weight: 500;
+            display: block;
+            margin-top: 0.2rem;
+        }
+        .advice-item .practical-rec::before {
+            content: "🚀 ";
+        }
+
         @media (max-width: 480px) {
-            .card { padding: 1.8rem 1.2rem; border-radius: 36px; }
-            .time-digit { font-size: 1.8rem; }
+            .card { padding: 1.5rem 1rem; border-radius: 36px; }
+            .time-digit { font-size: 1.6rem; }
             .logo { font-size: 1.7rem; }
             .row { flex-direction: column; align-items: center; }
+            .screen { top: 1rem; left: 1rem; right: 1rem; bottom: 1rem; }
         }
     </style>
 </head>
@@ -267,7 +324,7 @@
 
     <div class="card" id="card">
         <div id="inputScreen" class="screen active">
-            <div class="subtitle" style="margin-top:0.5rem;">каждый день — лепесток 🍂</div>
+            <div class="subtitle">каждый день — лепесток 🍂</div>
             <div class="input-group">
                 <div class="field">
                     <label>день, когда ты появился <span class="info-btn" data-info="birthdate">i</span></label>
@@ -318,7 +375,7 @@
         </div>
 
         <div id="timerScreen" class="screen">
-            <h1 style="font-size:1.7rem;"><span class="logo">🌸</span> твой тихий ручеёк</h1>
+            <h1 style="font-size:1.6rem;"><span class="logo">🌸</span> твой тихий ручеёк</h1>
             <div class="death-date-box"><span>🍂</span> <span id="deathText"></span></div>
             <div class="timer-container">
                 <div class="time-block"><span class="time-digit" id="daysLeft">0</span><span class="time-caption">дней</span></div>
@@ -334,8 +391,16 @@
                 <div class="progress-track"><div class="progress-fill" id="progressFill" style="width:0%"></div></div>
                 <div class="stats-row"><span id="livedYearsText">0 лет</span><span>из <span id="totalYearsSpan">72</span> лет</span></div>
             </div>
+            <button class="btn" id="adviceBtn" style="margin-top:0.5rem;">как увеличить это время</button>
             <div class="reset-text" id="resetBtn">← вернуться и передумать</div>
             <div class="soft-footer">каждая секунда — дар</div>
+        </div>
+
+        <div id="adviceScreen" class="screen">
+            <h1 style="font-size:1.6rem;"><span class="logo">🍃</span> что можно изменить</h1>
+            <div class="advice-container" id="adviceContainer"></div>
+            <button class="btn" id="backToTimerBtn" style="align-self:center; margin-top:0.5rem;">← назад</button>
+            <div class="soft-footer">выбор всегда за тобой</div>
         </div>
     </div>
 
@@ -360,42 +425,35 @@
             const screens = {
                 input: document.getElementById('inputScreen'),
                 quiz: document.getElementById('quizScreen'),
-                timer: document.getElementById('timerScreen')
+                timer: document.getElementById('timerScreen'),
+                advice: document.getElementById('adviceScreen')
             };
 
-            function fixCardHeight() {
-                const active = document.querySelector('.screen.active');
-                Object.values(screens).forEach(s => {
-                    s.style.visibility = 'visible';
-                    s.style.position = 'relative';
-                    s.style.opacity = '1';
-                });
-                const quizContainer = document.getElementById('quizContainer');
-                const originalContent = quizContainer.innerHTML;
-                quizContainer.innerHTML = `
-                    <div class="quiz-question"><span>Тестовый вопрос для измерения высоты</span></div>
-                    <div class="quiz-answers">
-                        <div class="quiz-answer">Ответ 1</div>
-                        <div class="quiz-answer">Ответ 2</div>
-                        <div class="quiz-answer">Ответ 3</div>
-                        <div class="quiz-answer">Ответ 4</div>
-                    </div>
-                `;
-                const quizHeight = screens.quiz.scrollHeight;
-                quizContainer.innerHTML = originalContent;
-                const inputHeight = screens.input.scrollHeight;
-                const timerHeight = screens.timer.scrollHeight;
-                const maxHeight = Math.max(inputHeight, quizHeight, timerHeight);
-                Object.values(screens).forEach(s => {
-                    s.style.visibility = '';
-                    s.style.position = '';
-                    s.style.opacity = '';
-                });
-                if (active) active.classList.add('active');
-                card.style.height = maxHeight + 'px';
-                card.style.overflow = 'hidden';
+            function fitCardToActiveScreen() {
+                const activeScreen = document.querySelector('.screen.active');
+                if (!activeScreen) return;
+                const contentHeight = activeScreen.scrollHeight;
+                const paddingTotal = 48; 
+                const minHeight = 420;
+                const newHeight = Math.max(contentHeight + paddingTotal, minHeight);
+                card.style.height = newHeight + 'px';
             }
-            window.addEventListener('load', fixCardHeight);
+
+            function showScreen(screen) {
+                Object.values(screens).forEach(s => s.classList.remove('active'));
+                screen.classList.add('active');
+                if (screen === screens.quiz) {
+                    quizCloud.style.display = 'flex';
+                } else {
+                    quizCloud.style.display = 'none';
+                }
+
+                // Небольшая задержка для того, чтобы браузер успел отрисовать контент, 
+                // после чего происходит плавная эластичная смена высоты (эффект разворота/сворачивания)
+                setTimeout(() => {
+                    requestAnimationFrame(fitCardToActiveScreen);
+                }, 150);
+            }
 
             const birthInput = document.getElementById('birthDateInput');
             const startBtn = document.getElementById('startBtn');
@@ -420,6 +478,9 @@
             const heightInput = document.getElementById('heightInput');
             const weightInput = document.getElementById('weightInput');
             const waistInput = document.getElementById('waistInput');
+            const adviceContainer = document.getElementById('adviceContainer');
+            const adviceBtn = document.getElementById('adviceBtn');
+            const backToTimerBtn = document.getElementById('backToTimerBtn');
 
             document.querySelector('#genderSelect .selected').addEventListener('click',(e)=>{e.stopPropagation(); genderOptions.classList.toggle('open')});
             genderOptions.querySelectorAll('.option').forEach(o=>o.addEventListener('click',(e)=>{
@@ -473,70 +534,74 @@
                 });
             });
 
+            // ================================================================
+            // ОБНОВЛЕННЫЙ МАССИВ ВОПРОСОВ С НАУЧНЫМ ОБОСНОВАНИЕМ И ИКОНКАМИ
+            // ================================================================
             const baseQuestions = [
-                { question: "Где ты живёшь?", answers: [{ text: "мегаполис", modifier: -2 }, { text: "небольшой город", modifier: 0 }, { text: "сельская местность", modifier: 2 }], info: "Жители мегаполисов чаще подвержены загрязнению воздуха (Lancet, 2021)." },
-                { question: "Качество воздуха вокруг?", answers: [{ text: "загрязнённый", modifier: -3 }, { text: "среднее", modifier: 0 }, { text: "чистый, много зелени", modifier: 2 }], info: "По данным ВОЗ, загрязнение воздуха сокращает продолжительность жизни на 1–3 года." },
-                { question: "Ты куришь?", answers: [{ text: "да, регулярно", modifier: -7 }, { text: "иногда", modifier: -3 }, { text: "нет", modifier: 0 }], info: "Курение – главная предотвратимая причина смерти, отнимает около 10 лет жизни (CDC, 2020)." },
-                { question: "Алкоголь?", answers: [{ text: "часто", modifier: -4 }, { text: "умеренно", modifier: -1 }, { text: "редко или никогда", modifier: 1 }], info: "Чрезмерное употребление алкоголя связано с заболеваниями печени и сердца (NIAAA, 2022)." },
-                { question: "Физическая активность:", answers: [{ text: "регулярные тренировки", modifier: 3 }, { text: "иногда", modifier: 0 }, { text: "мало двигаюсь", modifier: -3 }], info: "Регулярные упражнения снижают риск преждевременной смерти на 30% (AHA, 2022)." },
-                { question: "Питание:", answers: [{ text: "здоровое, сбалансированное", modifier: 2 }, { text: "среднее", modifier: 0 }, { text: "фастфуд и перекусы", modifier: -3 }], info: "Средиземноморская диета ассоциирована с увеличением продолжительности жизни на 4–5 лет (NEJM, 2021)." },
-                { question: "Сколько воды пьёшь в день?", answers: [{ text: "много (2+ литра)", modifier: 1 }, { text: "средне", modifier: 0 }, { text: "мало", modifier: -1 }], info: "Хроническое обезвоживание может приводить к нарушению работы почек (Mayo Clinic, 2020)." },
-                { question: "Уровень стресса:", answers: [{ text: "низкий, я спокоен", modifier: 2 }, { text: "умеренный", modifier: 0 }, { text: "высокий, постоянная тревога", modifier: -3 }], info: "Хронический стресс повышает кортизол, ускоряя старение клеток (Harvard, 2022)." },
-                { question: "Качество сна:", answers: [{ text: "7-8 часов, крепко", modifier: 1 }, { text: "меньше 6 часов", modifier: -2 }, { text: "больше 9 часов", modifier: -1 }], info: "Недосып повышает риск сердечных заболеваний и диабета (Sleep Research Society, 2021)." },
-                { question: "Образование и развитие:", answers: [{ text: "постоянно учусь", modifier: 1 }, { text: "иногда", modifier: 0 }, { text: "не до этого", modifier: -0.5 }], info: "Обучение на протяжении жизни снижает риск деменции (Alzheimer’s Association, 2021)." },
-                { question: "Социальная активность:", answers: [{ text: "много друзей, общение", modifier: 2 }, { text: "умеренно", modifier: 0 }, { text: "одиночество", modifier: -2 }], info: "Одиночество увеличивает риск ранней смерти на 26% (Perspectives on Psychological Science, 2015)." },
-                { question: "Семейное долголетие:", answers: [{ text: "многие жили долго", modifier: 3 }, { text: "средняя продолжительность", modifier: 0 }, { text: "были ранние уходы", modifier: -3 }], info: "Генетика определяет около 25% продолжительности жизни (Nature, 2021)." },
-                { question: "Регулярность медосмотров:", answers: [{ text: "раз в год", modifier: 1.5 }, { text: "иногда", modifier: 0 }, { text: "не проверяюсь", modifier: -1.5 }], info: "Ранняя диагностика повышает шансы на успешное лечение (WHO, 2022)." },
-                { question: "Работа связана с риском?", answers: [{ text: "да, опасная", modifier: -4 }, { text: "умеренный риск", modifier: -1 }, { text: "безопасная", modifier: 1 }], info: "Опасные профессии связаны с повышенным риском травм и хронических болезней (ILO, 2020)." },
-                { question: "Как часто бываешь на солнце?", answers: [{ text: "часто, без защиты", modifier: -2 }, { text: "умеренно", modifier: 0 }, { text: "редко, защищаюсь", modifier: 1 }], info: "УФ-излучение – основной фактор риска рака кожи (Skin Cancer Foundation, 2022)." },
-                { question: "Есть ли хронические заболевания?", answers: [{ text: "да, серьёзные", modifier: -6 }, { text: "лёгкие", modifier: -2 }, { text: "нет", modifier: 1 }], info: "Хронические болезни – ведущая причина смерти в мире (WHO, 2023)." },
-                { question: "Употребление сладкого:", answers: [{ text: "очень часто", modifier: -2 }, { text: "умеренно", modifier: 0 }, { text: "редко", modifier: 1 }], info: "Избыток сахара связан с ожирением и диабетом (AJCN, 2021)." },
-                { question: "Психическое здоровье:", answers: [{ text: "в порядке", modifier: 1 }, { text: "бывают трудности", modifier: 0 }, { text: "серьёзные проблемы", modifier: -2 }], info: "Депрессия увеличивает риск смерти на 50% (JAMA Psychiatry, 2021)." },
-                { question: "Наличие домашних животных:", answers: [{ text: "есть", modifier: 1.5 }, { text: "нет", modifier: 0 }], info: "Владельцы собак реже страдают от сердечно-сосудистых заболеваний (AHA, 2019)." },
-                { question: "Творческая самореализация:", answers: [{ text: "активно творю", modifier: 1 }, { text: "иногда", modifier: 0 }, { text: "не до творчества", modifier: -0.5 }], info: "Занятия творчеством снижают уровень стресса (British Journal of Occupational Therapy, 2020)." },
-                { question: "Уровень дохода:", answers: [{ text: "высокий", modifier: 1.5 }, { text: "средний", modifier: 0 }, { text: "низкий", modifier: -1.5 }], info: "Низкий доход связан с худшим доступом к медицине (The Lancet Public Health, 2022)." },
-                { question: "Кофеин:", answers: [{ text: "3+ чашек в день", modifier: -1 }, { text: "1-2 чашки", modifier: 0.5 }, { text: "не пью", modifier: 0 }], info: "Умеренное потребление кофе снижает риск сердечной недостаточности (AHA, 2021)." },
-                { question: "Наличие цели в жизни (икигай):", answers: [{ text: "есть чёткая цель", modifier: 2 }, { text: "размыто", modifier: 0 }, { text: "нет цели", modifier: -2 }], info: "Целеустремлённые люди живут дольше (JAMA Psychiatry, 2019)." },
-                { question: "Уровень образования:", answers: [{ text: "высшее", modifier: 1.5 }, { text: "среднее", modifier: 0 }, { text: "низкое", modifier: -1 }], info: "Образование коррелирует с более здоровым образом жизни (Nature, 2018)." },
-                { question: "Семейное положение:", answers: [{ text: "счастливый брак", modifier: 2 }, { text: "один(а)", modifier: 0 }, { text: "несчастливый брак", modifier: -2 }], info: "Счастливый брак связан с лучшим здоровьем (Harvard Study of Adult Development)." },
-                { question: "Религиозность/духовные практики:", answers: [{ text: "регулярно", modifier: 1 }, { text: "иногда", modifier: 0.5 }, { text: "нет", modifier: 0 }], info: "Духовные практики связаны с более низким уровнем стресса (PLOS ONE, 2020)." },
-                { question: "Волонтёрство:", answers: [{ text: "да, регулярно", modifier: 1.5 }, { text: "иногда", modifier: 0.5 }, { text: "нет", modifier: 0 }], info: "Волонтёры имеют более низкий уровень смертности (Psychology and Aging, 2020)." },
-                { question: "Потребление овощей и фруктов:", answers: [{ text: "5+ порций в день", modifier: 2 }, { text: "2-4 порции", modifier: 0.5 }, { text: "мало", modifier: -2 }], info: "Достаточное потребление овощей снижает риск смерти на 15% (IJE, 2021)." },
-                { question: "Использование ремня безопасности:", answers: [{ text: "всегда", modifier: 1 }, { text: "иногда", modifier: 0 }, { text: "редко", modifier: -2 }], info: "Ремень безопасности снижает риск смертельных травм на 45% (NHTSA, 2022)." },
-                { question: "Генетические риски (сердце, рак):", answers: [{ text: "низкие", modifier: 2 }, { text: "средние", modifier: 0 }, { text: "высокие", modifier: -3 }], info: "Генетика увеличивает риск, но образ жизни решает (Nature Genetics, 2022)." },
-                { question: "Сколько рыбы ешь в неделю?", answers: [{ text: "2+ порции", modifier: 1.5 }, { text: "1 порция", modifier: 0.5 }, { text: "редко", modifier: -1 }], info: "Омега-3 жирные кислоты снижают риск сердечных заболеваний (AHA, 2020)." },
-                { question: "Используешь ли зубную нить?", answers: [{ text: "ежедневно", modifier: 1 }, { text: "иногда", modifier: 0 }, { text: "нет", modifier: -1 }], info: "Заболевания дёсен связаны с сердечными болезнями (Journal of Periodontology, 2021)." },
-                { question: "Время перед экраном (часов в день):", answers: [{ text: "меньше 4", modifier: 1 }, { text: "4-8", modifier: 0 }, { text: "больше 8", modifier: -2 }], info: "Длительное сидение увеличивает риск метаболического синдрома (Annals of Internal Medicine, 2017)." },
-                { question: "Есть ли у тебя хобби?", answers: [{ text: "да, активное", modifier: 1.5 }, { text: "спокойное", modifier: 0.5 }, { text: "нет", modifier: -1 }], info: "Хобби улучшают когнитивные функции (JOHP, 2020)." },
-                { question: "Уровень шума в окружении:", answers: [{ text: "тихо", modifier: 1 }, { text: "умеренно", modifier: 0 }, { text: "громко", modifier: -1.5 }], info: "Хронический шум повышает риск гипертонии (European Heart Journal, 2019)." },
-                { question: "Качество питьевой воды:", answers: [{ text: "фильтрованная/бутилированная", modifier: 0.5 }, { text: "из-под крана", modifier: 0 }, { text: "плохое", modifier: -1 }], info: "Загрязнённая вода содержит тяжёлые металлы (WHO, 2021)." },
-                { question: "Вакцинация (грипп и др.):", answers: [{ text: "регулярно", modifier: 1 }, { text: "иногда", modifier: 0 }, { text: "нет", modifier: -0.5 }], info: "Вакцинация предотвращает инфекционные осложнения (CDC, 2022)." },
-                { question: "Следишь ли за осанкой?", answers: [{ text: "да, постоянно", modifier: 0.5 }, { text: "иногда", modifier: 0 }, { text: "нет", modifier: -1 }], info: "Плохая осанка ведёт к хроническим болям (European Spine Journal, 2020)." },
-                { question: "Частота смеха и радости:", answers: [{ text: "часто", modifier: 2 }, { text: "умеренно", modifier: 0.5 }, { text: "редко", modifier: -1.5 }], info: "Смех снижает гормоны стресса и улучшает иммунитет (Psychological Reports, 2020)." },
-                { question: "Использование солнцезащитного крема:", answers: [{ text: "ежедневно", modifier: 1 }, { text: "иногда", modifier: 0 }, { text: "нет", modifier: -1.5 }], info: "SPF снижает риск меланомы на 50% (Australian Journal of Dermatology, 2021)." },
-                { question: "Частота сексуальной активности:", answers: [{ text: "1-2 раза в неделю", modifier: 1 }, { text: "реже", modifier: 0 }, { text: "очень редко", modifier: -0.5 }], info: "Регулярная активность полезна для сердечно-сосудистой системы (American Journal of Cardiology, 2020)." },
-                { question: "Умственная активность (головоломки, чтение):", answers: [{ text: "ежедневно", modifier: 1.5 }, { text: "иногда", modifier: 0.5 }, { text: "редко", modifier: -1 }], info: "Когнитивные тренировки замедляют возрастное снижение памяти (Alzheimer’s & Dementia, 2021)." },
-                { question: "Отношение к жизни (оптимизм):", answers: [{ text: "оптимист", modifier: 2.5 }, { text: "реалист", modifier: 0.5 }, { text: "пессимист", modifier: -2 }], info: "Оптимисты живут на 11-15% дольше (PNAS, 2019)." },
-                { question: "Регулярность отпуска/отдыха:", answers: [{ text: "каждый год", modifier: 1.5 }, { text: "иногда", modifier: 0 }, { text: "не отдыхаю", modifier: -1.5 }], info: "Отдых снижает риск сердечных заболеваний (ESC, 2018)." },
-                { question: "Сколько шагов в день проходишь?", answers: [{ text: "более 10 000", modifier: 2 }, { text: "5 000 – 10 000", modifier: 0.5 }, { text: "меньше 5 000", modifier: -2 }], info: "Ходьба снижает смертность; оптимально 8000-10000 шагов (JAMA Internal Medicine, 2019)." },
-                { question: "Употребление орехов и семян:", answers: [{ text: "ежедневно", modifier: 1.5 }, { text: "иногда", modifier: 0.5 }, { text: "редко", modifier: -0.5 }], info: "Орехи богаты полезными жирами (NEJM, 2020)." },
-                { question: "Как часто готовишь дома?", answers: [{ text: "почти всегда", modifier: 1 }, { text: "иногда", modifier: 0 }, { text: "ем вне дома", modifier: -1.5 }], info: "Домашняя еда содержит меньше калорий (Public Health Nutrition, 2020)." },
-                { question: "Использование гаджетов перед сном:", answers: [{ text: "не использую", modifier: 1 }, { text: "иногда", modifier: 0 }, { text: "каждый вечер", modifier: -2 }], info: "Синий свет подавляет мелатонин (Harvard Health, 2021)." },
-                { question: "Чувство благодарности:", answers: [{ text: "часто", modifier: 1.5 }, { text: "иногда", modifier: 0.5 }, { text: "редко", modifier: -1 }], info: "Благодарность улучшает психическое здоровье (Journal of Happiness Studies, 2021)." },
-                { question: "Завтрак:", answers: [{ text: "полноценный каждый день", modifier: 1 }, { text: "иногда", modifier: 0 }, { text: "пропускаю", modifier: -1 }], info: "Регулярный завтрак связан с лучшим метаболизмом (Journal of Nutrition, 2020)." }
+                { question: "Где ты живёшь?", answers: [{ text: "мегаполис", modifier: -2 }, { text: "небольшой город", modifier: 0 }, { text: "сельская местность", modifier: 2 }], info: "Жители мегаполисов чаще подвержены загрязнению воздуха (Lancet, 2021).", advice: "🏙️ <span class='sci-mechanism'><b>Научное обоснование:</b> Постоянная экспозиция к PM2.5 и NO2 в мегаполисах вызывает системное воспаление и эндотелиальную дисфункцию, ассоциированную с повышением артериального давления на 5% на каждые 10 мкг/м³. Это увеличивает риск развития атеросклероза.</span><span class='practical-rec'>Рекомендация: Установите HEPA-фильтр в спальне, ограничьте поездки в часы пик и включите в маршрут прогулки в ближайших лесопарковых зонах.</span>" },
+                { question: "Качество воздуха вокруг?", answers: [{ text: "загрязнённый", modifier: -3 }, { text: "среднее", modifier: 0 }, { text: "чистый, много зелени", modifier: 2 }], info: "По данным ВОЗ, загрязнение воздуха сокращает продолжительность жизни на 1–3 года.", advice: "🌫️ <span class='sci-mechanism'><b>Научное обоснование:</b> Поллютанты индуцируют окислительный стресс, повреждая митохондрии альвеолоцитов и приводя к активации фактора NF-κB, что увеличивает продукцию провоспалительных цитокинов (IL-6, TNF-α).</span><span class='practical-rec'>Рекомендация: При высоком AQI (индексе качества) используйте респираторы N95 на улице и очистители воздуха с угольным фильтром дома.</span>" },
+                { question: "Ты куришь?", answers: [{ text: "да, регулярно", modifier: -7 }, { text: "иногда", modifier: -3 }, { text: "нет", modifier: 0 }], info: "Курение – главная предотвратимая причина смерти, отнимает около 10 лет жизни (CDC, 2020).", advice: "🚬 <span class='sci-mechanism'><b>Научное обоснование:</b> Табачный дым содержит >70 канцерогенов, вызывающих мутации в гене TP53. Бензопирен напрямую повреждает эндотелий сосудов, вызывая ускоренное укорочение теломер лейкоцитов и снижение чувствительности к инсулину.</span><span class='practical-rec'>Рекомендация: Полный отказ от курения до 35 лет полностью нивелирует риски сердечно-сосудистой смертности (NEJM, 2018). Используйте никотин-заместительную терапию или варениклин под контролем врача.</span>" },
+                { question: "Алкоголь?", answers: [{ text: "часто", modifier: -4 }, { text: "умеренно", modifier: -1 }, { text: "редко или никогда", modifier: 1 }], info: "Чрезмерное употребление алкоголя связано с заболеваниями печени и сердца (NIAAA, 2022).", advice: "🍷 <span class='sci-mechanism'><b>Научное обоснование:</b> Этанол метаболизируется в печени до ацетальдегида, прямого токсина для митохондрий гепатоцитов. Хронический прием повышает уровень триглицеридов в крови и вызывает фиброз печени, независимо от пола.</span><span class='practical-rec'>Рекомендация: Снизьте потребление до 1 стандартного напитка (10 г чистого спирта) в день и делайте перерывы (2-3 дня в неделю без алкоголя) для восстановления печеночного метаболизма.</span>" },
+                { question: "Физическая активность:", answers: [{ text: "регулярные тренировки", modifier: 3 }, { text: "иногда", modifier: 0 }, { text: "мало двигаюсь", modifier: -3 }], info: "Регулярные упражнения снижают риск преждевременной смерти на 30% (AHA, 2022).", advice: "🏃 <span class='sci-mechanism'><b>Научное обоснование:</b> Сидячий образ жизни ведет к снижению транслокации GLUT-4 на мембрану мышечных волокон, что напрямую ведет к инсулинорезистентности и накоплению висцерального жира. Это повышает риск сахарного диабета 2 типа на 80%.</span><span class='practical-rec'>Рекомендация: Включите высокоинтенсивные интервальные тренировки (HIIT) по 20 минут 3 раза в неделю и увеличивайте количество шагов до 8000-10000.</span>" },
+                { question: "Питание:", answers: [{ text: "здоровое, сбалансированное", modifier: 2 }, { text: "среднее", modifier: 0 }, { text: "фастфуд и перекусы", modifier: -3 }], info: "Средиземноморская диета ассоциирована с увеличением продолжительности жизни на 4–5 лет (NEJM, 2021).", advice: "🥗 <span class='sci-mechanism'><b>Научное обоснование:</b> Избыток насыщенных жиров и трансжиров активирует TLR4-рецепторы макрофагов, запуская синтез IL-1β и TNF-α. Это приводит к формированию атеросклеротических бляшек в коронарных артериях.</span><span class='practical-rec'>Рекомендация: Увеличьте долю мононенасыщенных жиров (оливковое масло, авокадо) и омега-3 (жирная рыба) до 40% от общего калоража. Замените переработанное мясо на бобовые и цельнозерновые.</span>" },
+                { question: "Сколько воды пьёшь в день?", answers: [{ text: "много (2+ литра)", modifier: 1 }, { text: "средне", modifier: 0 }, { text: "мало", modifier: -1 }], info: "Хроническое обезвоживание может приводить к нарушению работы почек (Mayo Clinic, 2020).", advice: "💧 <span class='sci-mechanism'><b>Научное обоснование:</b> Дегидратация повышает осмоляльность плазмы, активируя АДГ (вазопрессин) и сужая артериолы. Это хронически повышает нагрузку на почки и создает благоприятную среду для образования оксалатных камней.</span><span class='practical-rec'>Рекомендация: Установите бутылку с временными метками и следите за цветом мочи. Оптимальный объем - 30 мл/кг веса тела, включая воду из супов и фруктов.</span>" },
+                { question: "Уровень стресса:", answers: [{ text: "низкий, я спокоен", modifier: 2 }, { text: "умеренный", modifier: 0 }, { text: "высокий, постоянная тревога", modifier: -3 }], info: "Хронический стресс повышает кортизол, ускоряя старение клеток (Harvard, 2022).", advice: "🧘 <span class='sci-mechanism'><b>Научное обоснование:</b> Хроническая гиперкортизолемия подавляет экспрессию гена BDNF, снижая нейропластичность гиппокампа. Постоянная активация симпатоадреналовой системы ведет к тахикардии и гипертрофии миокарда.</span><span class='practical-rec'>Рекомендация: Внедрите протоколы медитации (осознанность) по 10 минут дважды в день или практикуйте 4-7-8 дыхание (вдох на 4 с, задержка 7 с, выдох 8 с) для снижения вариабельности сердечного ритма (HRV).</span>" },
+                { question: "Качество сна:", answers: [{ text: "7-8 часов, крепко", modifier: 1 }, { text: "меньше 6 часов", modifier: -2 }, { text: "больше 9 часов", modifier: -1 }], info: "Недосып повышает риск сердечных заболеваний и диабета (Sleep Research Society, 2021).", advice: "😴 <span class='sci-mechanism'><b>Научное обоснование:</b> Дефицит сна снижает концентрацию лептина и повышает грелин, увеличивая аппетит к простым углеводам. Активируется неспецифическое воспаление, и снижается ночной клиренс бета-амилоида в ЦНС, что является фактором риска болезни Альцгеймера.</span><span class='practical-rec'>Рекомендация: Синхронизируйте циркадный ритм - ложитесь спать до 23:00, ограничьте синий спектр за 1 час до сна. Поддерживайте комнатную температуру на уровне 18-19°C для фазы глубокого сна.</span>" },
+                { question: "Образование и развитие:", answers: [{ text: "постоянно учусь", modifier: 1 }, { text: "иногда", modifier: 0 }, { text: "не до этого", modifier: -0.5 }], info: "Обучение на протяжении жизни снижает риск деменции (Alzheimer’s Association, 2021).", advice: "📚 <span class='sci-mechanism'><b>Научное обоснование:</b> Когнитивная стимуляция поддерживает синаптическую плотность в коре головного мозга. Мета-анализ The Lancet (2020) показывает, что высокий когнитивный резерв снижает риск сосудистой деменции на 30%.</span><span class='practical-rec'>Рекомендация: Изучайте новый язык, записывайтесь на курсы по смежным профессиям или решайте логические головоломки минимум 20 минут в день для поддержки синаптогенеза.</span>" },
+                { question: "Социальная активность:", answers: [{ text: "много друзей, общение", modifier: 2 }, { text: "умеренно", modifier: 0 }, { text: "одиночество", modifier: -2 }], info: "Одиночество увеличивает риск ранней смерти на 26% (Perspectives on Psychological Science, 2015).", advice: "🤝 <span class='sci-mechanism'><b>Научное обоснование:</b> Социальная изоляция коррелирует с повышением уровня СРБ (С-реактивного белка) и фибриногена, что создает прокоагулянтный статус крови. Также повышается активность гипоталамо-гипофизарно-надпочечниковой оси.</span><span class='practical-rec'>Рекомендация: Планируйте встречи с друзьями не реже одного раза в две недели, вступайте в волонтерские организации или клубы по интересам, чтобы создать сеть социальной поддержки.</span>" },
+                { question: "Семейное долголетие:", answers: [{ text: "многие жили долго", modifier: 3 }, { text: "средняя продолжительность", modifier: 0 }, { text: "были ранние уходы", modifier: -3 }], info: "Генетика определяет около 25% продолжительности жизни (Nature, 2021).", advice: "🧬 <span class='sci-mechanism'><b>Научное обоснование:</b> Полиморфизмы в генах APOE (аполипопротеин Е) и FOXO3 влияют на метаболизм холестерина и устойчивость к окислительному стрессу. Однако эпигенетические модификации (образ жизни) перевешивают наследственные риски.</span><span class='practical-rec'>Рекомендация: Проведите ДНК-тест на предрасположенность к сердечно-сосудистым патологиям. При наличии рисков строго соблюдайте кардиопротективный протокол: контроль АД и липидного профиля раз в полгода.</span>" },
+                { question: "Регулярность медосмотров:", answers: [{ text: "раз в год", modifier: 1.5 }, { text: "иногда", modifier: 0 }, { text: "не проверяюсь", modifier: -1.5 }], info: "Ранняя диагностика повышает шансы на успешное лечение (WHO, 2022).", advice: "🩺 <span class='sci-mechanism'><b>Научное обоснование:</b> Многие аденокарциномы (например, колоректальный рак) развиваются бессимптомно на ранней стадии. Скрининг позволяет выявить полипы или маркеры опухолей (например, ПСА, СА-19-9) на стадиях, когда 5-летняя выживаемость составляет >90%.</span><span class='practical-rec'>Рекомендация: Проходите чекап-ап (общий анализ крови, биохимия, ТТГ и онкомаркеры) раз в год. Женщинам - маммография раз в 2 года, мужчинам - УЗИ предстательной железы.</span>" },
+                { question: "Работа связана с риском?", answers: [{ text: "да, опасная", modifier: -4 }, { text: "умеренный риск", modifier: -1 }, { text: "безопасная", modifier: 1 }], info: "Опасные профессии связаны с повышенным риском травм и хронических болезней (ILO, 2020).", advice: "🏗️ <span class='sci-mechanism'><b>Научное обоснование:</b> Постоянное воздействие промышленных аэрозолей (кремнезем, асбест) вызывает фиброз легких (силикоз). Вибрационная болезнь ведет к спазму периферических сосудов.</span><span class='practical-rec'>Рекомендация: Строго соблюдайте нормы СИЗ (респираторы с фильтром P100, антивибрационные перчатки). Требуйте прохождения периодической профпатологии для раннего выявления профзаболеваний.</span>" },
+                { question: "Как часто бываешь на солнце?", answers: [{ text: "часто, без защиты", modifier: -2 }, { text: "умеренно", modifier: 0 }, { text: "редко, защищаюсь", modifier: 1 }], info: "УФ-излучение – основной фактор риска рака кожи (Skin Cancer Foundation, 2022).", advice: "☀️ <span class='sci-mechanism'><b>Научное обоснование:</b> УФ-B-лучи вызывают прямые сшивки пиримидиновых димеров в ДНК кератиноцитов, инактивируя ген-супрессор опухолей PTEN. Это основной механизм развития базально-клеточной карциномы.</span><span class='practical-rec'>Рекомендация: Используйте фотозащитные кремы с SPF 30+ даже в пасмурную погоду (УФ-А проникает сквозь облака). Не забывайте про кожу головы и тыльную сторону кистей.</span>" },
+                { question: "Есть ли хронические заболевания?", answers: [{ text: "да, серьёзные", modifier: -6 }, { text: "лёгкие", modifier: -2 }, { text: "нет", modifier: 1 }], info: "Хронические болезни – ведущая причина смерти в мире (WHO, 2023).", advice: "🏥 <span class='sci-mechanism'><b>Научное обоснование:</b> Хроническое воспаление и окислительный стресс истощают энергетический резерв митохондрий и ускоряют саркопению. Это формирует порочный круг инвалидизации.</span><span class='practical-rec'>Рекомендация: Строгое соблюдение комплаентности к назначенной терапии (статины, сахароснижающие, антигипертензивные) критически снижает риски летальных осложнений. Используйте установки-напоминания на телефон.</span>" },
+                { question: "Употребление сладкого:", answers: [{ text: "очень часто", modifier: -2 }, { text: "умеренно", modifier: 0 }, { text: "редко", modifier: 1 }], info: "Избыток сахара связан с ожирением и диабетом (AJCN, 2021).", advice: "🍬 <span class='sci-mechanism'><b>Научное обоснование:</b> Избыток фруктозы метаболизируется в печени до триглицеридов de novo, минуя гликолитический контроль, что вызывает стеатоз печени и способствует развитию метаболического синдрома.</span><span class='practical-rec'>Рекомендация: Сократите потребление добавленных сахаров до 25 г/день (по рекомендации ВОЗ). Замените сладкие напитки на воду с долькой лимона или мятой.</span>" },
+                { question: "Психическое здоровье:", answers: [{ text: "в порядке", modifier: 1 }, { text: "бывают трудности", modifier: 0 }, { text: "серьёзные проблемы", modifier: -2 }], info: "Депрессия увеличивает риск смерти на 50% (JAMA Psychiatry, 2021).", advice: "🧠 <span class='sci-mechanism'><b>Научное обоснование:</b> Депрессивные расстройства ассоциированы с повышением уровня кортизола и уменьшением объема гиппокампа, что, в свою очередь, связано с повышенной агрегацией тромбоцитов.</span><span class='practical-rec'>Рекомендация: При наличии суицидальных мыслей или выраженной ангедонии незамедлительно обратитесь к психиатру. КПТ (когнитивно-поведенческая терапия) и СИОЗС (селективные ингибиторы обратного захвата серотонина) являются первой линией доказательной терапии.</span>" },
+                { question: "Наличие домашних животных:", answers: [{ text: "есть", modifier: 1.5 }, { text: "нет", modifier: 0 }], info: "Владельцы собак реже страдают от сердечно-сосудистых заболеваний (AHA, 2019).", advice: "🐕 <span class='sci-mechanism'><b>Научное обоснование:</b> Взаимодействие с питомцами увеличивает выработку окситоцина, подавляя активность префронтальной коры и снижая уровень циркулирующего кортизола, что приводит к меньшему риску гипертонии.</span><span class='practical-rec'>Рекомендация: Если есть возможность, заведите собаку - это не только снижает стресс, но и автоматически повышает вашу ежедневную физическую активность на 30%.</span>" },
+                { question: "Творческая самореализация:", answers: [{ text: "активно творю", modifier: 1 }, { text: "иногда", modifier: 0 }, { text: "не до творчества", modifier: -0.5 }], info: "Занятия творчеством снижают уровень стресса (British Journal of Occupational Therapy, 2020).", advice: "🎨 <span class='sci-mechanism'><b>Научное обоснование:</b> Творческая деятельность (рисование, музыка) стимулирует выработку дофамина в мезолимбическом пути и снижает активность миндалевидного тела, что является физиологической основой антистрессового эффекта.</span><span class='practical-rec'>Рекомендация: Пытайтесь уделять 15 минут в день творчеству, не ограничивая себя в «идеальности» результата. Важен сам процесс, ведущий к снижению ГАМК-ергической активности.</span>" },
+                { question: "Уровень дохода:", answers: [{ text: "высокий", modifier: 1.5 }, { text: "средний", modifier: 0 }, { text: "низкий", modifier: -1.5 }], info: "Низкий доход связан с худшим доступом к медицине (The Lancet Public Health, 2022).", advice: "💰 <span class='sci-mechanism'><b>Научное обоснование:</b> Социально-экономический статус коррелирует с частотой потребления свежих фруктов/овощей и доступностью превентивной медицины. Это модель, известная как «петля неравенства здоровья».</span><span class='practical-rec'>Рекомендация: Фокусируйтесь на бесплатных методах профилактики: регулярная ходьба, контроль порций, бесплатные чек-апы в ОМС. Вкладывайте бюджет в качественный сон и питание.</span>" },
+                { question: "Кофеин:", answers: [{ text: "3+ чашек в день", modifier: -1 }, { text: "1-2 чашки", modifier: 0.5 }, { text: "не пью", modifier: 0 }], info: "Умеренное потребление кофе снижает риск сердечной недостаточности (AHA, 2021).", advice: "☕ <span class='sci-mechanism'><b>Научное обоснование:</b> Полифенолы (хлорогеновая кислота) в кофе улучшают эндотелиальную функцию, однако высокие дозы (более 5 чашек) могут активировать АМФ-активируемую протеинкиназу, что ведет к повышению эктопических желудочковых сокращений.</span><span class='practical-rec'>Рекомендация: Ограничьте потребление 2 эспрессо или 3 фильтрованными чашками в день. Исключите кофе после 14:00, чтобы не нарушать архитектуру медленноволнового сна.</span>" },
+                { question: "Наличие цели в жизни (икигай):", answers: [{ text: "есть чёткая цель", modifier: 2 }, { text: "размыто", modifier: 0 }, { text: "нет цели", modifier: -2 }], info: "Целеустремлённые люди живут дольше (JAMA Psychiatry, 2019).", advice: "🎯 <span class='sci-mechanism'><b>Научное обоснование:</b> Смысл жизни (Purpose in Life) коррелирует с более низким уровнем воспалительных маркеров (ИЛ-6). По данным исследований, оно снижает общую смертность примерно на 12-15%.</span><span class='practical-rec'>Рекомендация: Запишите 5 целей на разные временные горизонты (1 год, 5 лет, 10 лет). Пересматривайте их ежеквартально, создавая систему якорения дофамина.</span>" },
+                { question: "Уровень образования:", answers: [{ text: "высшее", modifier: 1.5 }, { text: "среднее", modifier: 0 }, { text: "низкое", modifier: -1 }], info: "Образование коррелирует с более здоровым образом жизни (Nature, 2018).", advice: "🎓 <span class='sci-mechanism'><b>Научное обоснование:</b> Образование повышает уровень «health literacy» (медицинской грамотности), позволяя человеку лучше интерпретировать анализы и биомаркеры, снижая смертность от управляемых причин.</span><span class='practical-rec'>Рекомендация: Слушайте научно-популярные подкасты, читайте литературу по биологии старения. Расширение кругозора напрямую мотивирует к профилактике.</span>" },
+                { question: "Семейное положение:", answers: [{ text: "счастливый брак", modifier: 2 }, { text: "один(а)", modifier: 0 }, { text: "несчастливый брак", modifier: -2 }], info: "Счастливый брак связан с лучшим здоровьем (Harvard Study of Adult Development).", advice: "❤️ <span class='sci-mechanism'><b>Научное обоснование:</b> Благополучные партнерские отношения действуют как буфер против стресса, снижая уровень кортизола и повышая уровень эндорфинов, что напрямую влияет на регуляцию глюкозы.</span><span class='practical-rec'>Рекомендация: Если в браке неблагополучно, найдите семейного психолога. Если вы одиноки — замените этот фактор на дружеские связи высокого качества и волонтерство.</span>" },
+                { question: "Религиозность/духовные практики:", answers: [{ text: "регулярно", modifier: 1 }, { text: "иногда", modifier: 0.5 }, { text: "нет", modifier: 0 }], info: "Духовные практики связаны с более низким уровнем стресса (PLOS ONE, 2020).", advice: "✨ <span class='sci-mechanism'><b>Научное обоснование:</b> Регулярная медитация изменяет активность в передней поясной коре, увеличивая вариабельность сердечного ритма (HRV) и снижая симпатическую активность.</span><span class='practical-rec'>Рекомендация: Если не связаны с религией, попробуйте сеансы осознанной медитации, цигун или йогу-нидру. Достаточно 10-15 минут.</span>" },
+                { question: "Волонтёрство:", answers: [{ text: "да, регулярно", modifier: 1.5 }, { text: "иногда", modifier: 0.5 }, { text: "нет", modifier: 0 }], info: "Волонтёры имеют более низкий уровень смертности (Psychology and Aging, 2020).", advice: "🤲 <span class='sci-mechanism'><b>Научное обоснование:</b> Альтруистическое поведение связано с активацией «медиальной префронтальной коры» и снижением уровня IL-6, что указывает на прямую нейроиммунную модуляцию.</span><span class='practical-rec'>Рекомендация: Начните с малого - участвуйте в субботниках, помогайте пожилым соседям или приютам для животных. Это снижает риски психосоматики.</span>" },
+                { question: "Потребление овощей и фруктов:", answers: [{ text: "5+ порций в день", modifier: 2 }, { text: "2-4 порции", modifier: 0.5 }, { text: "мало", modifier: -2 }], info: "Достаточное потребление овощей снижает риск смерти на 15% (IJE, 2021).", advice: "🥬 <span class='sci-mechanism'><b>Научное обоснование:</b> Полифенолы и каротиноиды из овощей (например, лютеин, бета-каротин) обладают антиоксидантным действием, нейтрализуя активные формы кислорода и предотвращая окисление ЛПНП.</span><span class='practical-rec'>Рекомендация: Применяйте «правило радуги» — обязательно употребляйте не менее 3 разных цветов овощей в день. Овощи должны составлять 50% объема вашей тарелки.</span>" },
+                { question: "Использование ремня безопасности:", answers: [{ text: "всегда", modifier: 1 }, { text: "иногда", modifier: 0 }, { text: "редко", modifier: -2 }], info: "Ремень безопасности снижает риск смертельных травм на 45% (NHTSA, 2022).", advice: "🚗 <span class='sci-mechanism'><b>Научное обоснование:</b> Биомеханические исследования подтверждают, что ремень распределяет кинетическую энергию удара по грудной клетке, предотвращая фатальные повреждения головного мозга и разрывы аорты при лобовых столкновениях.</span><span class='practical-rec'>Рекомендация: Всегда пристегивайтесь, даже на заднем сиденье. Летальные исходы при ДТП в 30% случаев происходят с непристегнутыми пассажирами сзади.</span>" },
+                { question: "Генетические риски (сердце, рак):", answers: [{ text: "низкие", modifier: 2 }, { text: "средние", modifier: 0 }, { text: "высокие", modifier: -3 }], info: "Генетика увеличивает риск, но образ жизни решает (Nature Genetics, 2022).", advice: "🧬 <span class='sci-mechanism'><b>Научное обоснование:</b> Даже при наличии аллеля APOE4 (фактор риска болезни Альцгеймера), правильный метаболический контроль и средиземноморская диета снижают пенетрантность гена до 60%.</span><span class='practical-rec'>Рекомендация: Проведите генетический тест. Если носители, увеличивайте частоту проверки липидного профиля и оценивайте функцию щитовидной железы.</span>" },
+                { question: "Сколько рыбы ешь в неделю?", answers: [{ text: "2+ порции", modifier: 1.5 }, { text: "1 порция", modifier: 0.5 }, { text: "редко", modifier: -1 }], info: "Омега-3 жирные кислоты снижают риск сердечных заболеваний (AHA, 2020).", advice: "🐟 <span class='sci-mechanism'><b>Научное обоснование:</b> Эйкозапентаеновая (EPA) и докозагексаеновая (DHA) кислоты включаются в клеточные мембраны, повышая их текучесть и подавляя синтез триглицеридов в печени.</span><span class='practical-rec'>Рекомендация: Включайте жирную рыбу (сардины, скумбрия, лосось) 2-3 раза в неделю. При аллергии или веганстве компенсируйте альфа-линоленовой кислотой из льняного масла.</span>" },
+                { question: "Используешь ли зубную нить?", answers: [{ text: "ежедневно", modifier: 1 }, { text: "иногда", modifier: 0 }, { text: "нет", modifier: -1 }], info: "Заболевания дёсен связаны с сердечными болезнями (Journal of Periodontology, 2021).", advice: "🦷 <span class='sci-mechanism'><b>Научное обоснование:</b> Porphyromonas gingivalis (бактерия пародонтита) может проникать в кровоток, провоцируя эндотелиальную дисфункцию и образование микротромбов. Это связывает пародонтит с атеросклерозом.</span><span class='practical-rec'>Рекомендация: Используйте нить как минимум 1 раз в день перед чисткой щеткой. Регулярно проходите профессиональную гигиену у стоматолога для удаления зубного камня.</span>" },
+                { question: "Время перед экраном (часов в день):", answers: [{ text: "меньше 4", modifier: 1 }, { text: "4-8", modifier: 0 }, { text: "больше 8", modifier: -2 }], info: "Длительное сидение увеличивает риск метаболического синдрома (Annals of Internal Medicine, 2017).", advice: "📱 <span class='sci-mechanism'><b>Научное обоснование:</b> Низкая физическая активность в течение дня подавляет липопротеинлипазу, особенно в мышцах нижних конечностей, что напрямую ведет к накоплению висцерального жира.</span><span class='practical-rec'>Рекомендация: Внедрите правило «10 минут активности на каждый час сидения» — вставайте, делайте приседания или хотя бы разминайте спину, чтобы активировать мышечный насос.</span>" },
+                { question: "Есть ли у тебя хобби?", answers: [{ text: "да, активное", modifier: 1.5 }, { text: "спокойное", modifier: 0.5 }, { text: "нет", modifier: -1 }], info: "Хобби улучшают когнитивные функции (JOHP, 2020).", advice: "🧩 <span class='sci-mechanism'><b>Научное обоснование:</b> Увлечения, особенно требующие мелкой моторики (рисование, сборка), стимулируют нейронные связи в правом полушарии и зонах Брока, повышая пластичность мозга.</span><span class='practical-rec'>Рекомендация: Выделите бюджет и время на нецифровое увлечение (туризм, вышивка, игра на гитаре, садоводство). Это активирует дофаминовое подкрепление.</span>" },
+                { question: "Уровень шума в окружении:", answers: [{ text: "тихо", modifier: 1 }, { text: "умеренно", modifier: 0 }, { text: "громко", modifier: -1.5 }], info: "Хронический шум повышает риск гипертонии (European Heart Journal, 2019).", advice: "🔇 <span class='sci-mechanism'><b>Научное обоснование:</b> Постоянный акустический стресс активирует миндалевидное тело, вызывая выброс норадреналина и повышение систолического давления на 5-8 мм рт. ст.</span><span class='practical-rec'>Рекомендация: Используйте плотные шторы и беруши с шумоподавлением (например, с уровнем затухания NRR 33). Установите звуконепроницаемые стеклопакеты.</span>" },
+                { question: "Качество питьевой воды:", answers: [{ text: "фильтрованная/бутилированная", modifier: 0.5 }, { text: "из-под крана", modifier: 0 }, { text: "плохое", modifier: -1 }], info: "Загрязнённая вода содержит тяжёлые металлы (WHO, 2021).", advice: "🚰 <span class='sci-mechanism'><b>Научное обоснование:</b> Соли тяжелых металлов (свинец, ртуть) являются нейротоксинами. Они ингибируют ферменты антиоксидантной защиты (например, супероксиддисмутазу).</span><span class='practical-rec'>Рекомендация: Используйте фильтры обратного осмоса для эффективного удаления тяжелых металлов. Если живете в старом жилом фонде, сдайте воду на анализ.</span>" },
+                { question: "Вакцинация (грипп и др.):", answers: [{ text: "регулярно", modifier: 1 }, { text: "иногда", modifier: 0 }, { text: "нет", modifier: -0.5 }], info: "Вакцинация предотвращает инфекционные осложнения (CDC, 2022).", advice: "💉 <span class='sci-mechanism'><b>Научное обоснование:</b> Вакцинация снижает частоту тяжелых постинфекционных воспалительных реакций, таких как миокардит и синдром Гийена-Барре, которые часто фатальны у пожилых людей.</span><span class='practical-rec'>Рекомендация: Делайте прививку против гриппа ежегодно в сентябре-октябре. Рассмотрите вакцинацию против пневмококка и коклюша (по возрасту).</span>" },
+                { question: "Следишь ли за осанкой?", answers: [{ text: "да, постоянно", modifier: 0.5 }, { text: "иногда", modifier: 0 }, { text: "нет", modifier: -1 }], info: "Плохая осанка ведёт к хроническим болям (European Spine Journal, 2020).", advice: "🧍 <span class='sci-mechanism'><b>Научное обоснование:</b> Длительная статическая нагрузка на позвоночник вызывает мышечный дисбаланс, увеличивая давление на межпозвоночные диски, что ведет к миофасциальному синдрому и сдавливанию нервных корешков.</span><span class='practical-rec'>Рекомендация: Настройте эргономику рабочего места: экран на уровне глаз, поясничный валик. Делайте упражнения на растяжение грудных мышц и укрепление ромбовидных мышц.</span>" },
+                { question: "Частота смеха и радости:", answers: [{ text: "часто", modifier: 2 }, { text: "умеренно", modifier: 0.5 }, { text: "редко", modifier: -1.5 }], info: "Смех снижает гормоны стресса и улучшает иммунитет (Psychological Reports, 2020).", advice: "😂 <span class='sci-mechanism'><b>Научное обоснование:</b> Смех вызывает краткосрочное повышение и последующее снижение кортизола, а также повышает продукцию Т-лимфоцитов (CD4+), усиливая иммунный ответ.</span><span class='practical-rec'>Рекомендация: Смотрите комедийные ситкомы, общайтесь с людьми с легким чувством юмора. Даже простое подражание улыбке в течение 2 минут повышает серотонин.</span>" },
+                { question: "Использование солнцезащитного крема:", answers: [{ text: "ежедневно", modifier: 1 }, { text: "иногда", modifier: 0 }, { text: "нет", modifier: -1.5 }], info: "SPF снижает риск меланомы на 50% (Australian Journal of Dermatology, 2021).", advice: "🧴 <span class='sci-mechanism'><b>Научное обоснование:</b> УФ-А излучение проникает в дерму, вызывая разрушение коллагена и эластина. УФ-В вызывает прямое повреждение ДНК базальных клеток. Современные фильтры связывают эти фотоны.</span><span class='practical-rec'>Рекомендация: Используйте крем с SPF 30+ ежедневно, независимо от солнца. Наносите на открытые участки за 15 мин до выхода и обновляйте каждые 2 часа.</span>" },
+                { question: "Частота сексуальной активности:", answers: [{ text: "1-2 раза в неделю", modifier: 1 }, { text: "реже", modifier: 0 }, { text: "очень редко", modifier: -0.5 }], info: "Регулярная активность полезна для сердечно-сосудистой системы (American Journal of Cardiology, 2020).", advice: "🔥 <span class='sci-mechanism'><b>Научное обоснование:</b> Регулярный оргазм способствует выбросу эндорфинов, снижая напряжение симпатической нервной системы и улучшая вариабельность сердечного ритма.</span><span class='practical-rec'>Рекомендация: Старайтесь поддерживать регулярную интимную жизнь. При ее отсутствии (одиночество) компенсируйте выброс дофамина интенсивной физической активностью.</span>" },
+                { question: "Умственная активность (головоломки, чтение):", answers: [{ text: "ежедневно", modifier: 1.5 }, { text: "иногда", modifier: 0.5 }, { text: "редко", modifier: -1 }], info: "Когнитивные тренировки замедляют возрастное снижение памяти (Alzheimer’s & Dementia, 2021).", advice: "🧩 <span class='sci-mechanism'><b>Научное обоснование:</b> Нейропластичность позволяет мозгу создавать новые синаптические связи. Вовлечение в изучение нового повышает уровень BDNF (нейротрофического фактора мозга).</span><span class='practical-rec'>Рекомендация: 2-3 раза в неделю уделяйте 30 минут изучению чего-то нового (настольные игры, судоку, языки).</span>" },
+                { question: "Отношение к жизни (оптимизм):", answers: [{ text: "оптимист", modifier: 2.5 }, { text: "реалист", modifier: 0.5 }, { text: "пессимист", modifier: -2 }], info: "Оптимисты живут на 11-15% дольше (PNAS, 2019).", advice: "🌞 <span class='sci-mechanism'><b>Научное обоснование:</b> Оптимизм коррелирует с менее выраженной реакцией на глюкокортикоиды и более низкими уровнями C-реактивного белка, что снижает системное воспаление.</span><span class='practical-rec'>Рекомендация: Практикуйте когнитивную переоценку - записывайте 3 положительных события в день. Это смещает фокус внимания, изменяя активность в префронтальной коре.</span>" },
+                { question: "Регулярность отпуска/отдыха:", answers: [{ text: "каждый год", modifier: 1.5 }, { text: "иногда", modifier: 0 }, { text: "не отдыхаю", modifier: -1.5 }], info: "Отдых снижает риск сердечных заболеваний (ESC, 2018).", advice: "🏖️ <span class='sci-mechanism'><b>Научное обоснование:</b> Постоянное нахождение в состоянии «боевой готовности» (аллостатическая нагрузка) истощает надпочечники, повышая риск фибрилляции предсердий.</span><span class='practical-rec'>Рекомендация: Ежегодно выделяйте минимум 1 неделю для цифрового детокса (полного отключения от рабочих чатов и соцсетей).</span>" },
+                { question: "Сколько шагов в день проходишь?", answers: [{ text: "более 10 000", modifier: 2 }, { text: "5 000 – 10 000", modifier: 0.5 }, { text: "меньше 5 000", modifier: -2 }], info: "Ходьба снижает смертность; оптимально 8000-10000 шагов (JAMA Internal Medicine, 2019).", advice: "🚶 <span class='sci-mechanism'><b>Научное обоснование:</b> Низкая физическая нагрузка активирует аутофагию в мышечных тканях. Исследование JAMA подтвердило, что переход с 2000 до 8000 шагов снижает риск смерти от всех причин на 51%.</span><span class='practical-rec'>Рекомендация: Покупайте смарт-часы или используйте шагомер. Разбейте цель на мелкие порции: замените лифт лестницей, выходите на 1 остановку раньше.</span>" },
+                { question: "Употребление орехов и семян:", answers: [{ text: "ежедневно", modifier: 1.5 }, { text: "иногда", modifier: 0.5 }, { text: "редко", modifier: -0.5 }], info: "Орехи богаты полезными жирами (NEJM, 2020).", advice: "🥜 <span class='sci-mechanism'><b>Научное обоснование:</b> Минералы (магний, селен) и аргинин в орехах стимулируют синтез оксида азота (NO), улучшая вазодилатацию и снижая агрегацию тромбоцитов.</span><span class='practical-rec'>Рекомендация: Съедайте 30 г нежареных орехов и семян (грецкие, миндаль, кешью, тыквенные) ежедневно в качестве перекуса.</span>" },
+                { question: "Как часто готовишь дома?", answers: [{ text: "почти всегда", modifier: 1 }, { text: "иногда", modifier: 0 }, { text: "ем вне дома", modifier: -1.5 }], info: "Домашняя еда содержит меньше калорий (Public Health Nutrition, 2020).", advice: "🍳 <span class='sci-mechanism'><b>Научное обоснование:</b> В ресторанах используются скрытые жиры и усилители вкуса, повышающие уровень натрия в крови и увеличивающие постпрандиальную гликемию на 20%.</span><span class='practical-rec'>Рекомендация: Готовьте в выходные порционные обеды на неделю. Используйте специи вместо соли и готовьте на пару или запекайте.</span>" },
+                { question: "Использование гаджетов перед сном:", answers: [{ text: "не использую", modifier: 1 }, { text: "иногда", modifier: 0 }, { text: "каждый вечер", modifier: -2 }], info: "Синий свет подавляет мелатонин (Harvard Health, 2021).", advice: "🌙 <span class='sci-mechanism'><b>Научное обоснование:</b> Пик чувствительности к синей части спектра (480 нм) подавляет секрецию мелатонина в эпифизе, сдвигая фазу циркадного ритма на 1-2 часа, нарушая медленноволновой сон.</span><span class='practical-rec'>Рекомендация: За 1.5 часа до сна переведите экраны в режим «ночной» (теплый оттенок). Идеально - полностью отключить телефон и читать бумажную книгу.</span>" },
+                { question: "Чувство благодарности:", answers: [{ text: "часто", modifier: 1.5 }, { text: "иногда", modifier: 0.5 }, { text: "редко", modifier: -1 }], info: "Благодарность улучшает психическое здоровье (Journal of Happiness Studies, 2021).", advice: "🙏 <span class='sci-mechanism'><b>Научное обоснование:</b> Письменная практика благодарности активирует префронтальную кору, снижая тонус миндалевидного тела, что уменьшает тревожность и нормализует уровень норадреналина.</span><span class='practical-rec'>Рекомендация: Заведите «дневник благодарности», где каждый вечер записывайте 3 вещи, за которые благодарны дню. Это увеличивает субъективное ощущение удовлетворенности жизнью.</span>" },
+                { question: "Завтрак:", answers: [{ text: "полноценный каждый день", modifier: 1 }, { text: "иногда", modifier: 0 }, { text: "пропускаю", modifier: -1 }], info: "Регулярный завтрак связан с лучшим метаболизмом (Journal of Nutrition, 2020).", advice: "🍞 <span class='sci-mechanism'><b>Научное обоснование:</b> Пропуск завтрака повышает грелин и снижает лептин, вызывая переедание в вечерние часы. Завтрак запускает термогенез и стабилизирует суточный ритм кортизола.</span><span class='practical-rec'>Рекомендация: Даже если не хочется, выпейте смузи или съешьте небольшую порцию цельнозерновой каши с ягодами в течение часа после пробуждения.</span>" }
             ];
 
             const extraQuestionsMap = {
                 work: [
-                    { question: "Стаж работы на вредном производстве (лет):", answers: [{ text: "меньше 5", modifier: -0.5 }, { text: "5-15", modifier: -1.5 }, { text: "больше 15", modifier: -3 }], info: "Чем дольше стаж, тем выше риск профзаболеваний." },
-                    { question: "Используешь средства защиты?", answers: [{ text: "всегда", modifier: 0.5 }, { text: "иногда", modifier: 0 }, { text: "нет", modifier: -2 }], info: "Средства защиты снижают вредное воздействие." },
-                    { question: "Проходишь профосмотры?", answers: [{ text: "регулярно", modifier: 1 }, { text: "иногда", modifier: 0 }, { text: "нет", modifier: -1.5 }], info: "Профосмотры помогают выявить болезни на ранней стадии." }
+                    { question: "Стаж работы на вредном производстве (лет):", answers: [{ text: "меньше 5", modifier: -0.5 }, { text: "5-15", modifier: -1.5 }, { text: "больше 15", modifier: -3 }], info: "Чем дольше стаж, тем выше риск профзаболеваний.", advice: "🏭 <span class='sci-mechanism'><b>Научное обоснование:</b> Кумулятивное воздействие вредных частиц (пыли, паров) напрямую коррелирует с развитием профессиональной бронхиальной астмы и фиброзирующих заболеваний легких.</span><span class='practical-rec'>Рекомендация: Каждые 5 лет проходите полное проф. обследование (спирографию, КТ легких). Подумайте о смене деятельности после 15 лет стажа.</span>" },
+                    { question: "Используешь средства защиты?", answers: [{ text: "всегда", modifier: 0.5 }, { text: "иногда", modifier: 0 }, { text: "нет", modifier: -2 }], info: "Средства защиты снижают вредное воздействие.", advice: "🦺 <span class='sci-mechanism'><b>Научное обоснование:</b> Даже неполное использование СИЗ в течение 10% времени работы значительно увеличивает дозу вредного вещества в легких, нивелируя защитный эффект.</span><span class='practical-rec'>Рекомендация: Проведите аудит СИЗ на рабочем месте. Требуйте качественные сертифицированные маски и перчатки, а также обучающие инструктажи по их применению.</span>" },
+                    { question: "Проходишь профосмотры?", answers: [{ text: "регулярно", modifier: 1 }, { text: "иногда", modifier: 0 }, { text: "нет", modifier: -1.5 }], info: "Профосмотры помогают выявить болезни на ранней стадии.", advice: "🏥 <span class='sci-mechanism'><b>Научное обоснование:</b> Раннее выявление профессиональной сенсоневральной тугоухости и пневмокониоза, благодаря ежегодным осмотрам, позволяет прекратить контакт с фактором и значительно снизить инвалидизацию.</span><span class='practical-rec'>Рекомендация: Не игнорируйте предварительные и периодические осмотры. Следите за динамикой показателей, особенно за функцией легких.</span>" }
                 ],
                 chronic: [
-                    { question: "Какие именно заболевания?", answers: [{ text: "сердечно-сосудистые", modifier: -3 }, { text: "диабет", modifier: -2.5 }, { text: "онкология", modifier: -4 }, { text: "другое", modifier: -2 }], info: "Разные болезни по-разному влияют на продолжительность жизни." },
-                    { question: "Принимаешь лекарства регулярно?", answers: [{ text: "да, строго по схеме", modifier: 1 }, { text: "иногда пропускаю", modifier: 0 }, { text: "нет", modifier: -2 }], info: "Соблюдение режима лечения улучшает прогноз." }
+                    { question: "Какие именно заболевания?", answers: [{ text: "сердечно-сосудистые", modifier: -3 }, { text: "диабет", modifier: -2.5 }, { text: "онкология", modifier: -4 }, { text: "другое", modifier: -2 }], info: "Разные болезни по-разному влияют на продолжительность жизни.", advice: "💔 <span class='sci-mechanism'><b>Научное обоснование:</b> Гиперлипидемия и сахарный диабет 2 типа ускоряют гликирование белков, вызывая необратимое повреждение микроциркуляторного русла (нефропатия, ретинопатия).</span><span class='practical-rec'>Рекомендация: Строго соблюдайте схему лечения. Ведите дневник самоконтроля (давления, глюкозы). Регулярно сдавайте HbA1c (гликированный гемоглобин) раз в квартал.</span>" },
+                    { question: "Принимаешь лекарства регулярно?", answers: [{ text: "да, строго по схеме", modifier: 1 }, { text: "иногда пропускаю", modifier: 0 }, { text: "нет", modifier: -2 }], info: "Соблюдение режима лечения улучшает прогноз.", advice: "💊 <span class='sci-mechanism'><b>Научное обоснование:</b> Некомплаентность (пропуск приема) приводит к «рикошетной» гипертензии и нарушению стабильного терапевтического уровня препарата в плазме крови, что увеличивает риск сосудистых катастроф.</span><span class='practical-rec'>Рекомендация: Используйте недельные контейнеры-органайзеры для таблеток. Установите будильник на смартфоне с напоминанием о необходимости приема.</span>" }
                 ]
             };
+            // ================================================================
 
             let fullSequence = [], currentIndex = 0, answersHistory = [], quizAnswers = [], totalModifier = 0;
             let userBirthDate = null, finalLifespan = 72, currentDeathTime = null, currentBirthTime = null, countdownInterval = null;
@@ -550,16 +615,6 @@
                 quizProgressBar.style.width=p+'%';
                 questionCounter.textContent=`${Math.min(currentIndex+1,t)} / ${t}`;
                 backBtn.disabled=currentIndex===0;
-            }
-
-            function showScreen(screen) {
-                Object.values(screens).forEach(s => s.classList.remove('active'));
-                screen.classList.add('active');
-                if (screen === screens.quiz) {
-                    quizCloud.style.display = 'flex';
-                } else {
-                    quizCloud.style.display = 'none';
-                }
             }
 
             function renderQuestion() {
@@ -768,6 +823,58 @@
                 fullSequence=[]; quizAnswers=[]; quizContainer.innerHTML='';
                 quizProgressBar.style.width='0%'; questionCounter.textContent='1 / 50';
             });
+
+            // ================================================================
+            // ИСПРАВЛЕННАЯ ЛОГИКА ГЕНЕРАЦИИ СОВЕТОВ (С ИКОНКАМИ)
+            // ================================================================
+            function generateAdvice() {
+                let html = '';
+
+                if (!quizAnswers || quizAnswers.length === 0 || !fullSequence || fullSequence.length === 0) {
+                    adviceContainer.innerHTML = '<div class="advice-item" style="border-left-color:#e0c4b0;"><strong>Сначала пройдите опрос</strong><br><span class="sci-mechanism">Вы не завершили анкетирование. Пройдите вопросы, чтобы увидеть персонализированные рекомендации.</span></div>';
+                    return;
+                }
+
+                for (let i = 0; i < fullSequence.length; i++) {
+                    const q = fullSequence[i];
+                    const userAnswerData = quizAnswers[i];
+                    if (!userAnswerData) continue;
+
+                    const userAnswerText = userAnswerData.answer;
+                    const answerObj = q.answers.find(a => a.text === userAnswerText);
+                    if (!answerObj) continue;
+
+                    const maxModifier = Math.max(...q.answers.map(a => a.modifier));
+
+                    if (answerObj.modifier < maxModifier) {
+                        if (q.advice) {
+                            html += `<div class="advice-item">${q.advice}</div>`;
+                        }
+                    }
+                }
+
+                if (!html) {
+                    html = '<div class="advice-item" style="border-left-color:#bdd4b7;"><strong>✨ Ваш образ жизни уже близок к оптимальному!</strong><br><span class="sci-mechanism">Ваши когнитивные и кардиометаболические показатели говорят о низких рисках. Сфокусируйтесь на поддержании текущих привычек и регулярном мониторинге здоровья.</span><span class="practical-rec">Продолжайте заботиться о себе!</span></div>';
+                }
+                
+                adviceContainer.innerHTML = html;
+            }
+
+            // Обработчик кнопки совета
+            adviceBtn.addEventListener('click', () => {
+                generateAdvice();
+                showScreen(screens.advice);
+            });
+
+            backToTimerBtn.addEventListener('click', () => {
+                showScreen(screens.timer);
+            });
+
+            // Инициализация высоты при загрузке
+            setTimeout(() => {
+                requestAnimationFrame(fitCardToActiveScreen);
+            }, 100);
+
         })();
     </script>
 </body>
